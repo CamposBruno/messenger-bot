@@ -363,15 +363,15 @@ function receivedPostback(event) {
 
   // When a postback is called, we'll send a message back to the sender to
   // let them know it was successful
-  var messages = [];
+  var messages = [{"text" : "mensagem"}];
 
   switch (payload) {
     case "START_BOT":
 
-      messages = getDBmessages();
+      //messages = getDBmessages();
 
       messages.forEach(m => {
-          sendTextMessage(senderID, m);
+          sendTextMessage(senderID, m["text"]);
       });
 
 
