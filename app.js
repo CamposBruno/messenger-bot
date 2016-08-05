@@ -372,7 +372,7 @@ function receivedPostback(event) {
       sendTextMessage(senderID, "DEACTIVATE_BOT");
       break;
     default:
-      sendTextMessage(senderID, "Postback called");
+      sendTextMessage(senderID, "Bem vindo a telefênica! Em que posso ajudar?");
 
   }
 
