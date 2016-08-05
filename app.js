@@ -368,7 +368,7 @@ function receivedPostback(event) {
   switch (payload) {
     case "START_BOT":
 
-      //messages = getDBmessages();
+      messages = getDBmessages();
 
       messages.forEach(m => {
           sendTextMessage(senderID, m["text"]);
