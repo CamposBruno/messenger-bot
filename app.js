@@ -430,7 +430,7 @@ function getDBmessages(){
         if(err) throw err;
 
         docs.forEach(function (doc) {
-          //arrayMessages = doc["text"];
+          arrayMessages.push(doc);
         });
 
         // Since this is an example, we'll clean up after ourselves.
