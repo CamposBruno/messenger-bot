@@ -433,7 +433,7 @@ function getDBmessages(){
 
         if(err) throw err;
 
-        console.log("Find some messages");
+        console.log("Find some messages", docs);
 
         docs.forEach(function (doc) {
           console.log("message find", doc);
