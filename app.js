@@ -363,10 +363,19 @@ function receivedPostback(event) {
 
   // When a postback is called, we'll send a message back to the sender to
   // let them know it was successful
+  var messages = [];
 
   switch (payload) {
     case "START_BOT":
-      sendTextMessage(senderID, "START_BOT");
+
+      messages = getDBmessages();
+
+      messages.forEach(m => {
+          sendTextMessage(senderID, m);
+      });
+
+
+
       break;
     case "DEACTIVATE_BOT":
       sendTextMessage(senderID, "DEACTIVATE_BOT");
@@ -376,6 +385,69 @@ function receivedPostback(event) {
 
   }
 
+}
+
+function getDBmessages(){
+  var mongoose = require('mongoose');
+  var mongodbUri = 'mongodb://heroku_2w56zwxb:iv2ghrpt8nfs7m8vdnu2tpte0t@ds145245.mlab.com:45245/heroku_2w56zwxb';
+
+  var arrayMessages = [];
+
+  mongoose.connect(mongodbUri);
+
+  var db = mongoose.connection;
+
+  db.on('error', console.error.bind(console, 'connection error:'));
+
+  db.once('open', function callback () {
+     // Create song schema
+     var messageSchema = mongoose.Schema({
+       text: String
+     });
+
+     // Store song documents in a collection called "songs"
+     var Message = mongoose.model('messages', messagesSchema);
+
+     // Create seed data
+     var msg1 = new Message({
+       text: 'texto 1'
+     });
+
+     var msg2 = new Message({
+       text: 'texto 2'
+     });
+
+     var msg3 = new Message({
+       text: 'texto 3'
+     });
+
+     msg1.save();
+     msg2.save();
+     msg3.save();
+
+     Message.find().exec(function (err, docs){
+
+        if(err) throw err;
+
+        docs.forEach(function (doc) {
+          arrayMessages[] = doc["text"];
+        });
+
+        // Since this is an example, we'll clean up after ourselves.
+       mongoose.connection.db.collection('messages').drop(function (err) {
+         if(err) throw err;
+
+         // Only close the connection when your app is terminating
+         mongoose.connection.db.close(function (err) {
+           if(err) throw err;
+         });
+       });
+
+     })
+
+  });
+
+  return arrayMessages;
 }
 
 /*
