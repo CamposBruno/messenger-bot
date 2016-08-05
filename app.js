@@ -365,11 +365,11 @@ function receivedPostback(event) {
   // let them know it was successful
 
   switch (payload) {
+    case "START_BOT":
+      sendTextMessage(senderID, "START_BOT");
+      break;
     case "DEACTIVATE_BOT":
       sendTextMessage(senderID, "DEACTIVATE_BOT");
-      break;
-    case "UNSUBSCRIBE_USER":
-      sendTextMessage(senderID, "UNSUBSCRIBE_USER");
       break;
     default:
       sendTextMessage(senderID, "Postback called");
