@@ -406,7 +406,7 @@ function getDBmessages(){
      });
 
      // Store song documents in a collection called "songs"
-     var Message = mongoose.model('messages', messagesSchema);
+     var Message = mongoose.model('messages', messageSchema);
 
      // Create seed data
      var msg1 = new Message({
