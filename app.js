@@ -400,6 +400,8 @@ function getDBmessages(){
   db.on('error', console.error.bind(console, 'connection error:'));
 
   db.once('open', function callback () {
+
+    console.log("open mongo connection");
      // Create song schema
      var messageSchema = mongoose.Schema({
        text: String
@@ -425,11 +427,16 @@ function getDBmessages(){
      msg2.save();
      msg3.save();
 
+     console.log("saved messages");
+
      Message.find().exec(function (err, docs){
 
         if(err) throw err;
 
+        console.log("Find some messages");
+
         docs.forEach(function (doc) {
+          console.log("message find", doc);
           arrayMessages.push(doc);
         });
 
@@ -437,9 +444,13 @@ function getDBmessages(){
        mongoose.connection.db.collection('messages').drop(function (err) {
          if(err) throw err;
 
+         console.log("Drop Messages");
+
          // Only close the connection when your app is terminating
          mongoose.connection.db.close(function (err) {
            if(err) throw err;
+
+           console.log("Closed Connection");
          });
        });
 
