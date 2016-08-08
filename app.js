@@ -368,11 +368,11 @@ function receivedPostback(event) {
   switch (payload) {
     case "START_BOT":
 
-      getDBmessages(senderID);
+      messages = getDBmessages();
 
-      //messages.forEach(m => {
-      //    sendTextMessage(senderID, m["text"]);
-      //});
+      messages.forEach(m => {
+          sendTextMessage(senderID, m["text"]);
+      });
 
 
 
@@ -387,7 +387,7 @@ function receivedPostback(event) {
 
 }
 
-function getDBmessages(senderID){
+function getDBmessages(){
   var mongoose = require('mongoose');
   var mongodbUri = 'mongodb://heroku_2w56zwxb:iv2ghrpt8nfs7m8vdnu2tpte0t@ds145245.mlab.com:45245/heroku_2w56zwxb';
 
@@ -429,17 +429,24 @@ function getDBmessages(senderID){
 
      console.log("saved messages");
 
-     Message.find({}).exec(function (err, docs) {
+     Message.find({}).exec(function (err, docs){
 
         if(err) throw err;
 
-        console.log("Find some messages");
+        console.log("Find some messages", docs);
 
         docs.forEach(function (doc) {
           console.log("message find", doc);
-          sendTextMessage(senderID, doc["text"]);
+          arrayMessages.push(doc);
         });
 
+        mongoose.connection.db.close(function (err) {
+          if(err) throw err;
+
+          console.log("Closed Connection");
+        });
+
+        /*
         // Since this is an example, we'll clean up after ourselves.
        mongoose.connection.db.collection('messages').drop(function (err) {
          if(err) throw err;
@@ -447,18 +454,14 @@ function getDBmessages(senderID){
          console.log("Drop Messages");
 
          // Only close the connection when your app is terminating
-         mongoose.connection.db.close(function (err) {
-           if(err) throw err;
 
-           console.log("Closed Connection");
-         });
        });
+       */
 
-     })
+     });
 
   });
 
-  return arrayMessages;
 
 }
 
