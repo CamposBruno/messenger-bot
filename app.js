@@ -440,8 +440,6 @@ function getDBmessages(senderID){
           //console.log("message find", doc);
           //sendTextMessage(senderID, doc["body"]);
 
-
-
           var messagejson = {
             recipient: {
               id: senderID
@@ -914,6 +912,9 @@ function sendAccountLinking(recipientId) {
  *
  */
 function callSendAPI(messageData) {
+
+  console.log("")
+
   request({
     uri: 'https://graph.facebook.com/v2.6/me/messages',
     qs: { access_token: PAGE_ACCESS_TOKEN },
@@ -922,10 +923,8 @@ function callSendAPI(messageData) {
 
   }, function (error, response, body) {
 
-    console.log("error", error);
-    console.log("response", response);
-    console.log("body", body);
-    
+
+
     if (!error && response.statusCode == 200) {
       var recipientId = body.recipient_id;
       var messageId = body.message_id;
