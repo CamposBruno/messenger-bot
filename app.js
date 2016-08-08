@@ -925,6 +925,10 @@ function callSendAPI(messageData) {
       var recipientId = body.recipient_id;
       var messageId = body.message_id;
 
+      console.log("error", error);
+      console.log("response", response);
+      console.log("body", body);
+
       if (messageId) {
         console.log("Successfully sent message with id %s to recipient %s",
           messageId, recipientId);
