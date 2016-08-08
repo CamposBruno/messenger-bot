@@ -429,9 +429,9 @@ function getDBmessages(){
 
      console.log("saved messages");
 
-     Message.find({}, function (err, docs){
+     Message.find({}, function (docs){
 
-        if(err) throw err;
+        
 
         console.log("Find some messages", docs);
 
@@ -446,7 +446,7 @@ function getDBmessages(){
           console.log("Closed Connection");
         });
 
-        
+
      })
 
   });
