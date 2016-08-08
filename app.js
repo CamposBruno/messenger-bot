@@ -437,8 +437,7 @@ function getDBmessages(senderID){
 
         docs.forEach(function (doc) {
           console.log("message find", doc);
-          arrayMessages.push(doc);
-          sendTextMessage(senderID, m["text"]);
+          sendTextMessage(senderID, doc["text"]);
         });
 
         // Since this is an example, we'll clean up after ourselves.
