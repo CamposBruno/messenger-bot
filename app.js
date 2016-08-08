@@ -451,7 +451,7 @@ function getDBmessages(senderID){
 
           console.log("json object", messagejson);
 
-          //callSendAPI();
+          callSendAPI(messagejson);
         });
 
 
