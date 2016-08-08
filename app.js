@@ -418,7 +418,7 @@ function receivedPostback(event) {
 
 }
 
-function getDBmessages(){
+function getDBmessages(senderID){
 
   //mongoose.connection.db.once('open', function callback () {
 
