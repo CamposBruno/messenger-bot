@@ -431,15 +431,15 @@ function getDBmessages(senderID){
 
      Message.find({}).exec(function(err, docs){
 
-       console.log("Find some messages", docs);
-       console.log("errors", err);
+       //console.log("Find some messages", docs);
+       //console.log("errors", err);
 
         //if(err) throw err;
 
 
 
         docs.forEach(function (doc) {
-          console.log("message find", doc);
+          //console.log("message find", doc);
           //sendTextMessage(senderID, doc["body"]);
 
           var obj = JSON.parse(doc["body"]);
