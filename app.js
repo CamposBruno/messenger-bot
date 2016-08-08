@@ -921,13 +921,16 @@ function callSendAPI(messageData) {
     json: messageData
 
   }, function (error, response, body) {
+
+    console.log("error", error);
+    console.log("response", response);
+    console.log("body", body);
+    
     if (!error && response.statusCode == 200) {
       var recipientId = body.recipient_id;
       var messageId = body.message_id;
 
-      console.log("error", error);
-      console.log("response", response);
-      console.log("body", body);
+
 
       if (messageId) {
         console.log("Successfully sent message with id %s to recipient %s",
