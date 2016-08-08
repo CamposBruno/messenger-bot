@@ -368,11 +368,11 @@ function receivedPostback(event) {
   switch (payload) {
     case "START_BOT":
 
-      messages = getDBmessages();
+      getDBmessages(senderID);
 
-      messages.forEach(m => {
-          sendTextMessage(senderID, m["text"]);
-      });
+      //messages.forEach(m => {
+      //    sendTextMessage(senderID, m["text"]);
+      //});
 
 
 
@@ -387,7 +387,7 @@ function receivedPostback(event) {
 
 }
 
-function getDBmessages(){
+function getDBmessages(senderID){
   var mongoose = require('mongoose');
   var mongodbUri = 'mongodb://heroku_2w56zwxb:iv2ghrpt8nfs7m8vdnu2tpte0t@ds145245.mlab.com:45245/heroku_2w56zwxb';
 
@@ -429,7 +429,7 @@ function getDBmessages(){
 
      console.log("saved messages");
 
-     Message.find({}).exec((err, docs) => {
+     Message.find({}).exec(function (err, docs) {
 
         if(err) throw err;
 
@@ -438,6 +438,7 @@ function getDBmessages(){
         docs.forEach(function (doc) {
           console.log("message find", doc);
           arrayMessages.push(doc);
+          sendTextMessage(senderID, m["text"]);
         });
 
         // Since this is an example, we'll clean up after ourselves.
