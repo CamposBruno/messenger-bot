@@ -448,8 +448,10 @@ function getDBmessages(senderID){
           }
 
           console.log("json object", messagejson);
+          setTimeout(function(){
+              callSendAPI(messagejson);
+          }, 500)
 
-          callSendAPI(messagejson);
         });
 
 
