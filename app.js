@@ -429,7 +429,7 @@ function getDBmessages(senderID){
 
      console.log("saved messages");
 
-     Message.find({}).exec(function(err, docs){
+     Message.find({}).sort([["order", "ascending"]]).exec(function(err, docs){
 
        //console.log("Find some messages", docs);
        //console.log("errors", err);
