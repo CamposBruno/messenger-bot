@@ -442,11 +442,13 @@ function getDBmessages(senderID){
           console.log("message find", doc);
           //sendTextMessage(senderID, doc["body"]);
 
+          var obj = JSON.parse(doc["body"]);
+
           var messagejson = {
             recipient: {
               id: senderID
             },
-            JSON.parse(doc["body"]);
+            obj
           }
 
           console.log("json object", messagejson);
