@@ -420,7 +420,7 @@ function receivedPostback(event) {
 
 function getDBmessages(){
 
-  mongoose.connection.db.once('open', function callback () {
+  //mongoose.connection.db.once('open', function callback () {
 
     console.log("open mongo connection");
      // Create song schema
@@ -457,11 +457,7 @@ function getDBmessages(){
           console.log("message find", doc);
         });
         */
-        mongoose.connection.db.close(function (err) {
-          if(err) throw err;
 
-          console.log("Closed Connection");
-        });
 
 
         /*
@@ -478,7 +474,7 @@ function getDBmessages(){
 
      });
 
-  });
+  //});
 
 
 }
