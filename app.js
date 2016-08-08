@@ -9,9 +9,10 @@
 
 /* jshint node: true, devel: true */
 
-import './model/message_model.js';
 
 'use strict';
+
+import './model/message_model.js';
 
 const
   bodyParser = require('body-parser'),
