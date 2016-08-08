@@ -424,7 +424,7 @@ function getDBmessages(senderID){
 
 
 
-     msg1.save();
+     //msg1.save();
 
 
      console.log("saved messages");
