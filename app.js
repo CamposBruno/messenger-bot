@@ -8,6 +8,9 @@
  */
 
 /* jshint node: true, devel: true */
+
+import './model/message_model.js';
+
 'use strict';
 
 const
@@ -367,7 +370,7 @@ function receivedPostback(event) {
 
   switch (payload) {
     case "START_BOT":
-
+      console.log("call method");
       getDBmessages();
 
       /**messages.forEach(m => {
@@ -388,27 +391,12 @@ function receivedPostback(event) {
 }
 
 function getDBmessages(){
-  var mongoose = require('mongoose');
-  var mongodbUri = 'mongodb://heroku_2w56zwxb:iv2ghrpt8nfs7m8vdnu2tpte0t@ds145245.mlab.com:45245/heroku_2w56zwxb';
-
-  var arrayMessages = [];
-
-  mongoose.connect(mongodbUri);
-
-  var db = mongoose.connection;
-
-  db.on('error', console.error.bind(console, 'connection error:'));
 
   db.once('open', function callback () {
 
     console.log("open mongo connection");
      // Create song schema
-     var messageSchema = mongoose.Schema({
-       text: String
-     });
 
-     // Store song documents in a collection called "songs"
-     var Message = mongoose.model('messages', messageSchema);
 
      // Create seed data
      var msg1 = new Message({
