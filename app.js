@@ -368,11 +368,11 @@ function receivedPostback(event) {
   switch (payload) {
     case "START_BOT":
 
-      messages = getDBmessages();
+      getDBmessages();
 
-      messages.forEach(m => {
+      /**messages.forEach(m => {
           sendTextMessage(senderID, m["text"]);
-      });
+      });*/
 
 
 
