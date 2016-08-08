@@ -368,11 +368,11 @@ function receivedPostback(event) {
   switch (payload) {
     case "START_BOT":
 
-      getDBmessages();
+      messages = getDBmessages();
 
-      /*messages.forEach(m => {
+      messages.forEach(m => {
           sendTextMessage(senderID, m["text"]);
-      });*/
+      });
 
 
 
@@ -434,6 +434,32 @@ function getDBmessages(){
        console.log("Find some messages", docs);
        console.log("errors", err);
 
+        //if(err) throw err;
+        /*
+        console.log("Find some messages", docs);
+
+        docs.forEach(function (doc) {
+          console.log("message find", doc);
+        });
+        */
+        mongoose.connection.db.close(function (err) {
+          if(err) throw err;
+
+          console.log("Closed Connection");
+        });
+
+
+        /*
+        // Since this is an example, we'll clean up after ourselves.
+       mongoose.connection.db.collection('messages').drop(function (err) {
+         if(err) throw err;
+
+         console.log("Drop Messages");
+
+         // Only close the connection when your app is terminating
+
+       });
+       */
 
      });
 
