@@ -420,7 +420,7 @@ function receivedPostback(event) {
 
 function getDBmessages(){
 
-  mongoose.connection.once('open', function callback () {
+  mongoose.connection.db.once('open', function callback () {
 
     console.log("open mongo connection");
      // Create song schema
