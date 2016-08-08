@@ -399,7 +399,7 @@ function receivedPostback(event) {
   switch (payload) {
     case "START_BOT":
       console.log("call method");
-      getDBmessages();
+      getDBmessages(senderID);
 
       /**messages.forEach(m => {
           sendTextMessage(senderID, m["text"]);
@@ -450,13 +450,14 @@ function getDBmessages(){
        console.log("errors", err);
 
         //if(err) throw err;
-        /*
-        console.log("Find some messages", docs);
+
+
 
         docs.forEach(function (doc) {
           console.log("message find", doc);
+          sendTextMessage(senderID, doc["text"]);
         });
-        */
+
 
 
 
