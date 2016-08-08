@@ -431,13 +431,15 @@ function getDBmessages(){
 
      Message.find({}).exec(function(err, docs){
 
-        if(err) throw err;
+       console.log("Find some messages", docs);
+       console.log("errors", err);
 
+        //if(err) throw err;
+        /*
         console.log("Find some messages", docs);
 
         docs.forEach(function (doc) {
           console.log("message find", doc);
-          arrayMessages.push(doc);
         });
 
         mongoose.connection.db.close(function (err) {
@@ -445,6 +447,7 @@ function getDBmessages(){
 
           console.log("Closed Connection");
         });
+        */
 
         /*
         // Since this is an example, we'll clean up after ourselves.
