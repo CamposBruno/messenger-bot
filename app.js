@@ -429,11 +429,11 @@ function getDBmessages(){
 
      console.log("saved messages");
 
-     Message.find({}).exec(function (err, docs){
+     Message.find({}).exec([err, docs] => {
 
         if(err) throw err;
 
-        console.log("Find some messages", docs);
+        console.log("Find some messages");
 
         docs.forEach(function (doc) {
           console.log("message find", doc);
