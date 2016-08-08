@@ -429,7 +429,7 @@ function getDBmessages(){
 
      console.log("saved messages");
 
-     Message.find({}).exec([err, docs] => {
+     Message.find({}).exec((err, docs) => {
 
         if(err) throw err;
 
