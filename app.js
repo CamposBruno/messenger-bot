@@ -12,7 +12,34 @@
 
 'use strict';
 
-import './model/message_model.js';
+// ------------- BEGIN MODEL ---------------
+var mongoose = require('mongoose');
+var mongodbUri = 'mongodb://heroku_2w56zwxb:iv2ghrpt8nfs7m8vdnu2tpte0t@ds145245.mlab.com:45245/heroku_2w56zwxb';
+
+mongoose.connect(mongodbUri);
+
+
+var messageSchema = mongoose.Schema({
+  text: String
+});
+
+// Store song documents in a collection called "songs"
+var Message = mongoose.model('messages', messageSchema);
+
+
+
+
+// ------------- END MODEL ---------------
+
+
+
+
+
+
+
+
+
+
 
 const
   bodyParser = require('body-parser'),
@@ -367,7 +394,7 @@ function receivedPostback(event) {
 
   // When a postback is called, we'll send a message back to the sender to
   // let them know it was successful
-  var messages = [{"text" : "mensagem"}, {"text" : "mensagem2"}, {"text" : "mensagem3"}];
+
 
   switch (payload) {
     case "START_BOT":
@@ -393,11 +420,10 @@ function receivedPostback(event) {
 
 function getDBmessages(){
 
-  db.once('open', function callback () {
+  mongoose.connection.once('open', function callback () {
 
     console.log("open mongo connection");
      // Create song schema
-
 
      // Create seed data
      var msg1 = new Message({
