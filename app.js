@@ -429,7 +429,7 @@ function getDBmessages(senderID){
 
      console.log("saved messages");
 
-     Message.find({}).sort([["order", 1]]).exec(function(err, docs){
+     Message.find({}).sort({"order": 1}).exec(function(err, docs){
 
        //console.log("Find some messages", docs);
        //console.log("errors", err);
@@ -448,9 +448,8 @@ function getDBmessages(senderID){
           }
 
           console.log("json object", messagejson);
-          setTimeout(function(){
-              callSendAPI(messagejson);
-          }, 1000)
+          callSendAPI(messagejson);
+
 
         });
 
