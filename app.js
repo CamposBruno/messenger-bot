@@ -20,7 +20,8 @@ mongoose.connect(mongodbUri);
 
 
 var messageSchema = mongoose.Schema({
-  text: String
+  reference: { type: String, required: true },
+  body : { type: String, required: true } // json message template
 });
 
 // Store song documents in a collection called "songs"
@@ -30,16 +31,6 @@ var Message = mongoose.model('messages', messageSchema);
 
 
 // ------------- END MODEL ---------------
-
-
-
-
-
-
-
-
-
-
 
 const
   bodyParser = require('body-parser'),
@@ -427,20 +418,14 @@ function getDBmessages(senderID){
 
      // Create seed data
      var msg1 = new Message({
-       text: 'texto 1'
+       reference: 'START_BOT',
+       body: '"message":{ "attachment":{ "type":"template", "payload":{ "template_type":"generic", "elements":[{ "title":"Welcome to Peter\'s Hats", "image_url":"http://petersapparel.parseapp.com/img/item100-thumb.png", "subtitle":"We\'ve got the right hat for everyone.", "buttons":[ { "type":"web_url", "url":"https://petersapparel.parseapp.com/view_item?item_id=100", "title":"View Website" }, { "type":"postback", "title":"Start Chatting", "payload":"USER_DEFINED_PAYLOAD" } ] }] } }}'
      });
 
-     var msg2 = new Message({
-       text: 'texto 2'
-     });
 
-     var msg3 = new Message({
-       text: 'texto 3'
-     });
 
      msg1.save();
-     msg2.save();
-     msg3.save();
+
 
      console.log("saved messages");
 
@@ -455,7 +440,18 @@ function getDBmessages(senderID){
 
         docs.forEach(function (doc) {
           console.log("message find", doc);
-          sendTextMessage(senderID, doc["text"]);
+          //sendTextMessage(senderID, doc["body"]);
+
+          var messagejson = {
+            recipient: {
+              id: senderID
+            },
+            JSON.parse(doc["body"]);
+          }
+
+          console.log("json object", messagejson);
+
+          //callSendAPI();
         });
 
 
