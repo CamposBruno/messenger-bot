@@ -429,9 +429,9 @@ function getDBmessages(){
 
      console.log("saved messages");
 
-     Message.find({}, function (docs){
+     Message.find({}).exec(function (err, docs){
 
-        
+
 
         console.log("Find some messages", docs);
 
