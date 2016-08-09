@@ -477,7 +477,7 @@ function getDBmessages(senderID){
 
 function enviarMensagem(senderID, messagejson){
   sendTypingOn(senderID);
-  setTimeout(function(messagejson){
+  setTimeout(function(){
     sendTypingOff(senderID);
     callSendAPI(messagejson);
   }, 1000);
