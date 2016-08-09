@@ -436,6 +436,8 @@ function getDBmessages(senderID){
 
         //if(err) throw err;
 
+
+
         docs.forEach(function (doc) {
           //console.log("message find", doc);
           //sendTextMessage(senderID, doc["body"]);
@@ -447,10 +449,14 @@ function getDBmessages(senderID){
             message: JSON.parse(doc["body"])
           }
 
-          console.log("json object", messagejson);
-          callSendAPI(messagejson);
-          sendTypingOn(senderID);
-          sendTypingOff(senderID);
+          setInterval(function(messagejson){
+            callSendAPI(messagejson);
+            sendTypingOn(senderID);
+            sendTypingOff(senderID);
+          }, 1000, messagejson);
+
+          
+
 
         });
 
