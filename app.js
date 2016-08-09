@@ -449,18 +449,7 @@ function getDBmessages(senderID){
             message: JSON.parse(doc["body"])
           }
 
-          (function(){
-            setTimeout(function(){
-              callSendAPI(messagejson);
-              sendTypingOn(senderID);
-              sendTypingOff(senderID);
-            }, 1000);            
-          })(messagejson);
-
-
-
-
-
+          enviarMensagem(senderID, messagejson);
 
         });
 
@@ -483,6 +472,15 @@ function getDBmessages(senderID){
 
   //});
 
+
+}
+
+function enviarMensagem(senderID, messagejson){
+  sendTypingOn(senderID);
+  setTimeout(function(messagejson){
+    sendTypingOff(senderID);
+    callSendAPI(messagejson);
+  }, 1000);
 
 }
 
