@@ -317,6 +317,12 @@ function getDBmessages(senderID, payload){
 
         if(err) throw err;
 
+        console.log("docs: ", docs);
+
+        if(!docs){
+          sendTextMessage(senderID, "(USER) Tem umas coisas da linguagem humana que eu ainda não aprendi.  Pra agilizar nosso papo, escolha um desses:");
+        }
+
           docs.forEach(function (doc) {
             //console.log("message find", doc);
 
