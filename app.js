@@ -131,7 +131,7 @@ app.post('/webhook', function (req, res) {
       // Iterate over each messaging event
       pageEntry.messaging.forEach(function(messagingEvent) {
 
-        var user = messagingEvent.sender;
+        var user = messagingEvent.from;
 
         console.log("user: ", user);
 
