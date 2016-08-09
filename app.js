@@ -327,16 +327,17 @@ function getDBmessages(senderID, payload){
                 id: senderID
               },
               message: JSON.parse(doc["body"])
-            }
+            };
 
             enviarMensagem(senderID, messagejson);
 
           });
+
         }else{
           sendTextMessage(senderID, "(USER) Tem umas coisas da linguagem humana que eu ainda não aprendi.  Pra agilizar nosso papo, escolha um desses:");
         }
 
-      }
+
 
      });
 
