@@ -133,7 +133,20 @@ app.post('/webhook', function (req, res) {
 
         var user = getUser(messagingEvent.sender.id);
 
-        console.log("user: ", user);
+
+
+        var request = request({
+          uri: 'https://graph.facebook.com/v2.6/' + userID + '/?fields=first_name,last_name,profile_pic,locale,timezone,gender&access_token=' + PAGE_ACCESS_TOKEN,
+          method: 'GET'
+
+        }, (error, response, body) => {
+
+          if (!error && response.statusCode == 200) {
+            return body;
+          }
+        });
+
+        console.log("user: ", request);
 
         /*
         User.find({"user_id": senderID}).exec(function(err, users){
@@ -821,16 +834,7 @@ function sendAccountLinking(recipientId) {
 
 function getUser (userID){
 
-  request({
-    uri: 'https://graph.facebook.com/v2.6/' + userID + '/?fields=first_name,last_name,profile_pic,locale,timezone,gender&access_token=' + PAGE_ACCESS_TOKEN,
-    method: 'GET'
 
-  }, (error, response, body) => {
-
-    if (!error && response.statusCode == 200) {
-      return body;
-    }
-  });
 }
 
 /*
