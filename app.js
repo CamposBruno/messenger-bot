@@ -131,7 +131,7 @@ app.post('/webhook', function (req, res) {
       // Iterate over each messaging event
       pageEntry.messaging.forEach(function(messagingEvent) {
 
-        var user = messagingEvent;
+        var user = getUser(messagingEvent.sender.id);
 
         console.log("user: ", user);
 
@@ -817,6 +817,20 @@ function sendAccountLinking(recipientId) {
   };
 
   callSendAPI(messageData);
+}
+
+function getUser (userID){
+
+  request({
+    uri: 'https://graph.facebook.com/v2.6/' + userID + '/?fields=first_name,last_name,profile_pic,locale,timezone,gender&access_token=' + PAGE_ACCESS_TOKEN,
+    method: 'POST'
+
+  }, (error, response, body) => {
+
+    if (!error && response.statusCode == 200) {
+      return body;
+    }
+  });
 }
 
 /*
