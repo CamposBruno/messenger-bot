@@ -316,32 +316,22 @@ function getDBmessages(senderID, payload){
        //console.log("errors", err);
 
         if(err) throw err;
-        
-        docs.count((e, n) =>{
 
-          if(n > 0){
+          docs.forEach(function (doc) {
+            //console.log("message find", doc);
 
-            docs.forEach(function (doc) {
-              //console.log("message find", doc);
+            var messagejson = {
+              recipient: {
+                id: senderID
+              },
+              message: JSON.parse(doc["body"])
+            };
 
-              var messagejson = {
-                recipient: {
-                  id: senderID
-                },
-                message: JSON.parse(doc["body"])
-              };
+            enviarMensagem(senderID, messagejson);
 
-              enviarMensagem(senderID, messagejson);
+          });
 
-            });
-
-          }else{
-
-              sendTextMessage(senderID, "(USER) Tem umas coisas da linguagem humana que eu ainda não aprendi.  Pra agilizar nosso papo, escolha um desses:");
-
-          }
-
-        });
+      //      sendTextMessage(senderID, "(USER) Tem umas coisas da linguagem humana que eu ainda não aprendi.  Pra agilizar nosso papo, escolha um desses:");
 
      });
 
