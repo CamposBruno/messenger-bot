@@ -243,9 +243,6 @@ function receivedMessage(event) {
   var timeOfMessage = event.timestamp;
   var message = event.message;
 
-  console.log("Received message for user %d and page %d at %d with message:",
-    senderID, recipientID, timeOfMessage);
-  console.log(JSON.stringify(message));
 
   var isEcho = message.is_echo;
   var messageId = message.mid;
@@ -257,84 +254,9 @@ function receivedMessage(event) {
   var messageAttachments = message.attachments;
   var quickReply = message.quick_reply;
 
-  if (isEcho) {
-    // Just logging message echoes to console
-    console.log("Received echo for message %s and app %d with metadata %s",
-      messageId, appId, metadata);
-    return;
-  } else if (quickReply) {
-    var quickReplyPayload = quickReply.payload;
-    console.log("Quick reply for message %s with payload %s",
-      messageId, quickReplyPayload);
+  var payload = p =>  message.payload ? message.payload : message.text;
 
-    sendTextMessage(senderID, "Quick reply tapped");
-    return;
-  }
-
-  if (messageText) {
-
-    // If we receive a text message, check to see if it matches any special
-    // keywords and send back the corresponding example. Otherwise, just echo
-    // the text we received.
-    switch (messageText) {
-      case 'image':
-        sendImageMessage(senderID);
-        break;
-
-      case 'gif':
-        sendGifMessage(senderID);
-        break;
-
-      case 'audio':
-        sendAudioMessage(senderID);
-        break;
-
-      case 'video':
-        sendVideoMessage(senderID);
-        break;
-
-      case 'file':
-        sendFileMessage(senderID);
-        break;
-
-      case 'button':
-        sendButtonMessage(senderID);
-        break;
-
-      case 'generic':
-        sendGenericMessage(senderID);
-        break;
-
-      case 'receipt':
-        sendReceiptMessage(senderID);
-        break;
-
-      case 'quick reply':
-        sendQuickReply(senderID);
-        break;
-
-      case 'read receipt':
-        sendReadReceipt(senderID);
-        break;
-
-      case 'typing on':
-        sendTypingOn(senderID);
-        break;
-
-      case 'typing off':
-        sendTypingOff(senderID);
-        break;
-
-      case 'account linking':
-        sendAccountLinking(senderID);
-        break;
-
-      default:
-        sendTextMessage(senderID, messageText);
-    }
-  } else if (messageAttachments) {
-    sendTextMessage(senderID, "Message with attachment received");
-  }
+  getDBmessages(senderID, payload);
 }
 
 
@@ -380,98 +302,43 @@ function receivedPostback(event) {
   // button for Structured Messages.
   var payload = event.postback.payload;
 
-  console.log("Received postback for user %d and page %d with payload '%s' " +
+    console.log("Received postback for user %d and page %d with payload '%s' " +
     "at %d", senderID, recipientID, payload, timeOfPostback);
 
-  // When a postback is called, we'll send a message back to the sender to
-  // let them know it was successful
-
-
-  switch (payload) {
-    case "START_BOT":
-      console.log("call method");
-      getDBmessages(senderID);
-
-      /**messages.forEach(m => {
-          sendTextMessage(senderID, m["text"]);
-      });*/
-
-
-
-      break;
-    case "DEACTIVATE_BOT":
-      sendTextMessage(senderID, "DEACTIVATE_BOT");
-      break;
-    default:
-      sendTextMessage(senderID, "Bem vindo a telefênica! Em que posso ajudar?");
-
-  }
+    getDBmessages(senderID, payload);
 
 }
 
-function getDBmessages(senderID){
+function getDBmessages(senderID, payload){
 
-  //mongoose.connection.db.once('open', function callback () {
-
-    console.log("open mongo connection");
-     // Create song schema
-
-     // Create seed data
-     var msg1 = new Message({
-       reference: 'START_BOT',
-       body: '{"message":{ "attachment":{ "type":"template", "payload":{ "template_type":"generic", "elements":[{ "title":"Welcome to Peters Hats", "image_url":"http://petersapparel.parseapp.com/img/item100-thumb.png", "subtitle":"Weve got the right hat for everyone.", "buttons":[ { "type":"web_url", "url":"https://petersapparel.parseapp.com/view_item?item_id=100", "title":"View Website" }, { "type":"postback", "title":"Start Chatting", "payload":"USER_DEFINED_PAYLOAD" } ] }] } }}}'
-     });
-
-
-
-     //msg1.save();
-
-
-     console.log("saved messages");
-
-     Message.find({}).sort({"order": 1}).exec(function(err, docs){
-
+     Message.find({"reference" : payload}).sort({"order": 1}).exec(function(err, docs){
        //console.log("Find some messages", docs);
        //console.log("errors", err);
 
-        //if(err) throw err;
+        if(err) throw err;
 
+        if(docs.count()){
 
+          docs.forEach(function (doc) {
+            //console.log("message find", doc);
 
-        docs.forEach(function (doc) {
-          //console.log("message find", doc);
-          //sendTextMessage(senderID, doc["body"]);
+            var messagejson = {
+              recipient: {
+                id: senderID
+              },
+              message: JSON.parse(doc["body"])
+            }
 
-          var messagejson = {
-            recipient: {
-              id: senderID
-            },
-            message: JSON.parse(doc["body"])
-          }
+            enviarMensagem(senderID, messagejson);
 
-          enviarMensagem(senderID, messagejson);
+          });
+        }else{
+          sendTextMessage(senderID, "(USER) Tem umas coisas da linguagem humana que eu ainda não aprendi.  Pra agilizar nosso papo, escolha um desses:");
+        }
 
-        });
-
-
-
-
-        /*
-        // Since this is an example, we'll clean up after ourselves.
-       mongoose.connection.db.collection('messages').drop(function (err) {
-         if(err) throw err;
-
-         console.log("Drop Messages");
-
-         // Only close the connection when your app is terminating
-
-       });
-       */
+      }
 
      });
-
-  //});
-
 
 }
 
@@ -808,7 +675,7 @@ function sendReceiptMessage(recipientId) {
  *
  */
 function sendQuickReply(recipientId) {
-  
+
   var messageData = {
     recipient: {
       id: recipientId
