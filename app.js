@@ -823,7 +823,7 @@ function getUser (userID){
 
   request({
     uri: 'https://graph.facebook.com/v2.6/' + userID + '/?fields=first_name,last_name,profile_pic,locale,timezone,gender&access_token=' + PAGE_ACCESS_TOKEN,
-    method: 'POST'
+    method: 'GET'
 
   }, (error, response, body) => {
 
