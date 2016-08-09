@@ -131,12 +131,12 @@ app.post('/webhook', function (req, res) {
       // Iterate over each messaging event
       pageEntry.messaging.forEach(function(messagingEvent) {
 
-        var user = getUser(messagingEvent.sender.id);
+        //var user = getUser();
 
 
 
         var request = request({
-          uri: 'https://graph.facebook.com/v2.6/' + userID + '/?fields=first_name,last_name,profile_pic,locale,timezone,gender&access_token=' + PAGE_ACCESS_TOKEN,
+          uri: 'https://graph.facebook.com/v2.6/' + messagingEvent.sender.id + '/?fields=first_name,last_name,profile_pic,locale,timezone,gender&access_token=' + PAGE_ACCESS_TOKEN,
           method: 'GET'
 
         }, (error, response, body) => {
