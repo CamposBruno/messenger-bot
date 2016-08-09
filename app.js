@@ -808,6 +808,7 @@ function sendReceiptMessage(recipientId) {
  *
  */
 function sendQuickReply(recipientId) {
+  
   var messageData = {
     recipient: {
       id: recipientId
