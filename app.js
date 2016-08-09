@@ -28,7 +28,21 @@ var messageSchema = mongoose.Schema({
 var Message = mongoose.model('messages', messageSchema);
 
 
+var userSchema = mongoose.Schema({
+  user_id : { type: String, required: true }, // messenger user id
+  name : { type: String, required: true },
+  surname : String
+});
 
+var User = mongoose.model('user', userSchema);
+
+
+var userSessionSchema = mongoose.Schema({
+  user_id : { type: String, required: true },
+  body : { type: String, required: true } // json message template
+});
+
+var UserSession = mongoose.model('user_session', userSessionSchema);
 
 // ------------- END MODEL ---------------
 
