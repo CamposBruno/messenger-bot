@@ -449,13 +449,13 @@ function getDBmessages(senderID){
             message: JSON.parse(doc["body"])
           }
 
-          setInterval(function(messagejson){
+
             callSendAPI(messagejson);
             sendTypingOn(senderID);
             sendTypingOff(senderID);
-          }, 1000, messagejson);
-
           
+
+
 
 
         });
