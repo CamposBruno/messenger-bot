@@ -449,11 +449,11 @@ function getDBmessages(senderID){
             message: JSON.parse(doc["body"])
           }
 
-
+          setTimeout(function(){
             callSendAPI(messagejson);
             sendTypingOn(senderID);
             sendTypingOff(senderID);
-          
+          }, 1000);
 
 
 
