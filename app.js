@@ -39,7 +39,8 @@ var User = mongoose.model('user', userSchema);
 
 var userSessionSchema = mongoose.Schema({
   user_id : { type: String, required: true },
-  body : { type: String, required: true } // json message template
+  level : { type: String, required: true }, // nivel do menu que usuario está
+  last_payload : { type: String, required: true } // ultima opção que usuario enviou
 });
 
 var UserSession = mongoose.model('user_session', userSessionSchema);
@@ -129,6 +130,24 @@ app.post('/webhook', function (req, res) {
 
       // Iterate over each messaging event
       pageEntry.messaging.forEach(function(messagingEvent) {
+
+        var user = messagingEvent.sender;
+
+        console.log("user: ", user);
+
+        /*
+        User.find({"user_id": senderID}).exec(function(err, users){
+            if(!users.length){
+              var newUser = new User({
+                user_id: senderID,
+                name: USER_NAME
+              });
+            }
+        });*/
+
+
+
+
         if (messagingEvent.optin) {
           receivedAuthentication(messagingEvent);
         } else if (messagingEvent.message) {
@@ -324,6 +343,7 @@ function receivedPostback(event) {
 }
 
 function getDBmessages(senderID, payload){
+
 
      Message.find({"reference" : payload}).sort({"order": 1}).exec(function(err, docs){
        //console.log("Find some messages", docs);
