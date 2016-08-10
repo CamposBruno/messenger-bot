@@ -51,7 +51,7 @@ var userSessionSchema = mongoose.Schema({
 
 });
 
-var UserSession = mongoose.model('user_session', userSessionSchema);
+var UserSession = mongoose.model('user_sessions', userSessionSchema);
 
 // ------------- END MODEL ---------------
 
