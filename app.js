@@ -390,7 +390,7 @@ function getDBmessages(senderID, payload){
 
 //        console.log("docs: ", docs);
         var currentUser = new CurrentUser();
-        var username = currentUser.getUserName();
+        var username = currentUser.getUserName(senderID);
 
         if(!docs.length){
           sendTextMessage(senderID, username + " Tem umas coisas da linguagem humana que eu ainda não aprendi.  Pra agilizar nosso papo, escolha um desses:");
