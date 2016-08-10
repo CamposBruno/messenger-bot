@@ -371,7 +371,9 @@ class CurrentUser{
     getUserName(user_id){
       var username;
       User.findOne({"user_id" : user_id}).select('first_name').exec(function(err, docs){
-          username = docs.first_name;
+        console.log("erro ",  err);
+        console.log("docs", docs);
+          username = "Bruno";
       });
 
       return username;
