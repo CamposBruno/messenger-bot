@@ -140,23 +140,13 @@ app.post('/webhook', function (req, res) {
       pageEntry.messaging.forEach(function(messagingEvent) {
 
 
-      if (messagingEvent.optin) {
-        console.log("OPTIN");
-        continue;
-      } else if (messagingEvent.message) {
-        receivedMessage(messagingEvent);
-      } else if (messagingEvent.delivery) {
-        console.log("DELIVERED");
-        continue;
-      } else if (messagingEvent.postback) {
-        receivedPostback(messagingEvent);
-      } else if (messagingEvent.read) {
-        console.log("READ");
-        continue;
-      } else if (messagingEvent.account_linking) {
-        console.log("account_linking");
-        continue;
-      }
+      if (messagingEvent.optin ||
+          messagingEvent.delivery ||
+          messagingEvent.delivery ||
+          messagingEvent.read ||
+          messagingEvent.account_linking){
+            console.log("DESNECESSÁRIO");
+      }else{
 
         if(messagingEvent.postback){
           var payload = messagingEvent.postback.payload;
@@ -290,7 +280,9 @@ app.post('/webhook', function (req, res) {
         } else {
           console.log("Webhook received unknown messagingEvent: ", messagingEvent);
         }*/
+      }
       });
+
     });
 
     // Assume all went well.
