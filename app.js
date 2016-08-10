@@ -389,20 +389,14 @@ function getDBmessages(senderID, payload){
        //console.log("errors", err);
 
         if(err) throw err;
-        var username;
-
-        User.findOne({"user_id" : senderID}).select('first_name').exec((err, docs) =>{
-          console.log("erro ",  err);
-          console.log("docs", docs);
-            username = "Bruno";
-        });
-
-//        console.log("docs: ", docs);
-
-
-
         if(!docs.length){
-          sendTextMessage(senderID, username + " Tem umas coisas da linguagem humana que eu ainda não aprendi.  Pra agilizar nosso papo, escolha um desses:");
+          User.findOne({"user_id" : senderID}).select('first_name').exec((err, docs) =>{
+              sendTextMessage(senderID, docs.first_name + " Tem umas coisas da linguagem humana que eu ainda não aprendi.  Pra agilizar nosso papo, escolha um desses:");
+          });
+
+
+
+
         }
 
           docs.forEach(function (doc) {
