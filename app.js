@@ -240,7 +240,7 @@ app.post('/webhook', function (req, res) {
                    message: JSON.parse(doc["body"])
                  };
 
-                 enviarMensagem(senderID, messagejson, doc["reference"]);
+                 enviarMensagem(messagingEvent.sender.id, messagejson, doc["reference"]);
 
                });
 
