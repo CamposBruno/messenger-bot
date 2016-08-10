@@ -148,6 +148,7 @@ app.post('/webhook', function (req, res) {
 
               }, function(error, response, body){
                   console.log("respota do facebook "+ response.statusCode);
+                  
                   if (!error && response.statusCode == 200) {
                     var fbUser = JSON.parse(body);
                     var newUser = new User({
