@@ -139,7 +139,8 @@ app.post('/webhook', function (req, res) {
 
         User.find({"user_id": messagingEvent.sender.id}).exec(function(err, users){
           console.log("procura user com id : " + messagingEvent.sender.id + " achou "+ users.length);
-            if(!users.length){
+          // 942267829228446 id do bot
+            if(!users.length && messagingEvent.sender.id != "942267829228446"){
               console.log("faz facebook request");
               request({
                 uri: 'https://graph.facebook.com/v2.6/' + messagingEvent.sender.id,
