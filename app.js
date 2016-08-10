@@ -21,7 +21,9 @@ mongoose.connect(mongodbUri);
 
 var messageSchema = mongoose.Schema({
   reference: { type: String, required: true },
-  body : { type: String, required: true } // json message template
+  body : { type: String, required: true }, // json message template
+  order: { type: Integer },
+  mismatch : {type: Boolean}
 });
 
 // Store song documents in a collection called "songs"
