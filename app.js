@@ -139,8 +139,8 @@ app.post('/webhook', function (req, res) {
 
         User.find({"user_id": messagingEvent.sender.id}).exec(function(err, users){
           console.log("procura user com id : " + messagingEvent.sender.id + " achou "+ users.length);
-          // 942267829228446 id do bot
-            if(!users.length && messagingEvent.sender.id != "942267829228446"){
+          // 228963060836739 id do bot
+            if(!users.length && messagingEvent.sender.id != "228963060836739"){
               console.log("faz facebook request");
               request({
                 uri: 'https://graph.facebook.com/v2.6/' + messagingEvent.sender.id,
@@ -367,6 +367,18 @@ function receivedPostback(event) {
 
 }
 
+export class CurrentUser(){
+    function getUserName(user_id){
+      var username;
+      User.findOne({"user_id" : user_id}).select('first_name').exec((err, docs) => {
+          username = docs.first_name;
+      });
+
+      return username;
+    }
+}
+
+
 function getDBmessages(senderID, payload){
 
 
@@ -376,10 +388,12 @@ function getDBmessages(senderID, payload){
 
         if(err) throw err;
 
-        console.log("docs: ", docs);
+//        console.log("docs: ", docs);
+        var currentUser = new CurrentUser();
+        var username = currentUser.getUserName();
 
         if(!docs.length){
-          sendTextMessage(senderID, User.first_name + " Tem umas coisas da linguagem humana que eu ainda não aprendi.  Pra agilizar nosso papo, escolha um desses:");
+          sendTextMessage(senderID, username + " Tem umas coisas da linguagem humana que eu ainda não aprendi.  Pra agilizar nosso papo, escolha um desses:");
         }
 
           docs.forEach(function (doc) {
