@@ -46,7 +46,7 @@ var User = mongoose.model('user', userSchema);
 var userSessionSchema = mongoose.Schema({
   sender_id : { type: String, required: true },
   receiver_id : { type: String, required: true }, // nivel do menu que usuario está
-  body : { type: String, required: true },
+  body : { type: String },
   last_payload : { type: String } // ultima opção que usuario enviou
 
 });
@@ -457,7 +457,7 @@ function enviarMensagem(senderID, messagejson, payload){
   var newUserSession = new UserSession({
     sender_id : "ROBOT",
     receiver_id : senderID,
-    body : messagejson,
+    body : JSON.stringfy(messagejson),
     last_payload : payload
   });
 
