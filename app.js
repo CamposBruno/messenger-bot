@@ -187,9 +187,7 @@ app.post('/webhook', function (req, res) {
           last_payload: payload
         });
 
-        newUserSession.save(function(err, doc){
-            console.log("DEBUG: ERRO? ", err);
-        });
+        newUserSession.save();
 
         // busca mensagens com raference  = payload que usuario enviou
         Message.find({"reference" : payload}).sort({"order": 1}).exec(function(err, docs){
