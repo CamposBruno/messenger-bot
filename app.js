@@ -202,7 +202,7 @@ app.post('/webhook', function (req, res) {
             throw err;
           }
 
-          Message.find({"reference" : "START_BOT_T", "mismatch" : null}).sort({"order": 1}).exec(function(err, docs){
+          Message.find({"reference" : payload, "mismatch" : false}).sort({"order": 1}).exec(function(err, docs){
             console.log("DEBUG: busca mensagens com payload enviado. achou: " + docs.length);
 
             //console.log("errors", err);
