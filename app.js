@@ -217,7 +217,7 @@ app.post('/webhook', function (req, res) {
                  console.log("DEBUG: busca registro de sessão pela ultima mensagem enviada para o usuario. achou : " + usersession.length);
                  if(usersession.length){
                    //busca mensagem de erro comparando o ultimo payload enviado e mensagem que é mismatch
-                   Message.find({"reference" : usersession[0].last_payload, "mismatch" : true}).limit(1).sort({"order": 1}).exec(function(err, messages){
+                   Message.find({"reference" : usersession[0].last_payload, "mismatch" : true}).sort({"order": 1}).exec(function(err, messages){
                      console.log("DEBUG: busca mensagem de erro resgitrada para aquele payload achou " + messages.length);
                      if(messages.length){
                        messages.forEach(function (message) {
