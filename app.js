@@ -139,7 +139,7 @@ app.post('/webhook', function (req, res) {
       // Iterate over each messaging event
       pageEntry.messaging.forEach(function(messagingEvent) {
 
-        if(messagingEvent.postback.payload){
+        if(messagingEvent.postback){
           var payload = messagingEvent.postback.payload;
         }else{
           var payload = messagingEvent.message.text;
