@@ -389,10 +389,17 @@ function getDBmessages(senderID, payload){
        //console.log("errors", err);
 
         if(err) throw err;
+        var username;
+
+        User.findOne({"user_id" : user_id}).select('first_name').exec(function(err, docs){
+          console.log("erro ",  err);
+          console.log("docs", docs);
+            username = "Bruno";
+        });
 
 //        console.log("docs: ", docs);
-        var currentUser = new CurrentUser();
-        var username = currentUser.getUserName(senderID);
+
+
 
         if(!docs.length){
           sendTextMessage(senderID, username + " Tem umas coisas da linguagem humana que eu ainda não aprendi.  Pra agilizar nosso papo, escolha um desses:");
