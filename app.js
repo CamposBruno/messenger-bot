@@ -29,9 +29,13 @@ var Message = mongoose.model('messages', messageSchema);
 
 
 var userSchema = mongoose.Schema({
-  user_id : { type: String, required: true }, // messenger user id
-  name : { type: String, required: true },
-  surname : String
+  user_id: { type: String, required: true }, // messenger user id,
+  first_name: { type: String, required: true },
+  last_name : { type: String },
+  profile_pic : { type: String },
+  locale: { type: String },
+  timezone: { type: String },
+  gender: { type: String }
 });
 
 var User = mongoose.model('user', userSchema);
@@ -133,30 +137,34 @@ app.post('/webhook', function (req, res) {
 
         //var user = getUser();
 
-
-
-        var request = request({
-          uri: 'https://graph.facebook.com/v2.6/' + messagingEvent.sender.id + '/?fields=first_name,last_name,profile_pic,locale,timezone,gender&access_token=' + PAGE_ACCESS_TOKEN,
-          method: 'GET'
-
-        }, (error, response, body) => {
-
-          if (!error && response.statusCode == 200) {
-            return body;
-          }
-        });
-
-        console.log("user: ", request);
-
-        /*
-        User.find({"user_id": senderID}).exec(function(err, users){
+        User.find({"user_id": messagingEvent.sender.id}).exec(function(err, users){
+          console.log("procura user com id : " + messagingEvent.sender.id + " achou "+ users.length);
             if(!users.length){
-              var newUser = new User({
-                user_id: senderID,
-                name: USER_NAME
+              console.log("faz facebook request");
+              request({
+                uri: 'https://graph.facebook.com/v2.6/' + messagingEvent.sender.id,
+                method: 'GET',
+                qs: { access_token: PAGE_ACCESS_TOKEN , fields : 'first_name,last_name,profile_pic,locale,timezone,gender'}
+
+              }, function(error, response, body){
+                  console.log("respota do facebook "+ response.statusCode);
+                  if (!error && response.statusCode == 200) {
+                    var fbUser = JSON.parse(body);
+                    var newUser = new User({
+                      user_id: senderID,
+                      first_name: fbUser.first_name,
+                      last_name : fbUser.last_name,
+                      profile_pic : fbUser.profile_pic,
+                      locale: fbUser.locale,
+                      timezone: fbUser.timezone,
+                      gender: fbUser.gender
+                    });
+
+                    newUser.save();
+                  }
               });
             }
-        });*/
+        });
 
 
 
@@ -186,6 +194,8 @@ app.post('/webhook', function (req, res) {
     res.sendStatus(200);
   }
 });
+
+
 
 /*
  * This path is used for account linking. The account linking call-to-action
