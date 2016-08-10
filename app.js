@@ -183,7 +183,7 @@ app.post('/webhook', function (req, res) {
         var newUserSession = new UserSession({
           sender_id : messagingEvent.sender.id,
           receiver_id : messagingEvent.recipient.id,
-          body : messagingEvent.message,
+          body : JSON.stringify(messagingEvent.message),
           last_payload: payload
         });
 
