@@ -391,7 +391,7 @@ function getDBmessages(senderID, payload){
         if(err) throw err;
         var username;
 
-        User.findOne({"user_id" : senderID}).select('first_name').exec(function(err, docs){
+        User.findOne({"user_id" : senderID}).select('first_name').exec((err, docs) =>{
           console.log("erro ",  err);
           console.log("docs", docs);
             username = "Bruno";
