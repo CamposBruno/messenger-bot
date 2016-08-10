@@ -202,7 +202,7 @@ app.post('/webhook', function (req, res) {
             throw err;
           }
 
-          Message.find({"reference" : payload}).sort({"order": 1}).exec(function(err, docs){
+          Message.find({"reference" : "START_BOT_T", "mismatch" : false}).sort({"order": 1}).exec(function(err, docs){
             console.log("DEBUG: busca mensagens com payload enviado. achou: " + docs.length);
 
             //console.log("errors", err);
@@ -927,7 +927,7 @@ function getUser (userID){
  */
 function callSendAPI(messageData) {
 
-  console.log("")
+
 
   request({
     uri: 'https://graph.facebook.com/v2.6/me/messages',
@@ -953,7 +953,7 @@ function callSendAPI(messageData) {
         recipientId);
       }
     } else {
-      console.error(response.error);
+      console.error("ERROR CAL SEND API ", response.error);
     }
   });
 }
