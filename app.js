@@ -223,12 +223,12 @@ app.post('/webhook', function (req, res) {
                        messages.forEach(function (message) {
                          var messagejson = {
                            recipient: {
-                             id: senderID
+                             id: messagingEvent.sender.id
                            },
                            message: JSON.parse(message["body"])
                          };
                          console.log("DEBUG: envia mensagem para usuario");
-                         enviarMensagem(senderID, messagejson, message["reference"]);
+                         enviarMensagem(messagingEvent.sender.id, messagejson, message["reference"]);
                        });
 
                      }
