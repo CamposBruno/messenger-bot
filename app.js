@@ -368,7 +368,7 @@ function receivedPostback(event) {
 }
 
 class CurrentUser{
-    function getUserName(user_id){
+    getUserName(user_id){
       var username;
       User.findOne({"user_id" : user_id}).select('first_name').exec((err, docs) => {
           username = docs.first_name;
