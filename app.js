@@ -42,9 +42,11 @@ var User = mongoose.model('user', userSchema);
 
 
 var userSessionSchema = mongoose.Schema({
-  user_id : { type: String, required: true },
-  level : { type: String, required: true }, // nivel do menu que usuario está
-  last_payload : { type: String, required: true } // ultima opção que usuario enviou
+  sender_id : { type: String, required: true },
+  receiver_id : { type: String, required: true }, // nivel do menu que usuario está
+  body : { type: String, required: true },
+  last_payload : { type: String } // ultima opção que usuario enviou
+
 });
 
 var UserSession = mongoose.model('user_session', userSessionSchema);
@@ -135,20 +137,21 @@ app.post('/webhook', function (req, res) {
       // Iterate over each messaging event
       pageEntry.messaging.forEach(function(messagingEvent) {
 
-        //var user = getUser();
+        var payload = p => messagingEvent.postback.payload ? messagingEvent.postback.payload : messagingEvent.message.text;
 
+        // verifica se usuario existe
         User.find({"user_id": messagingEvent.sender.id}).exec(function(err, users){
-          console.log("procura user com id : " + messagingEvent.sender.id + " achou "+ users.length);
-          // 228963060836739 id do bot
-            if(!users.length && messagingEvent.sender.id != "228963060836739"){
-              console.log("faz facebook request");
+          console.log("DEBUG: procura user com id : " + messagingEvent.sender.id + " achou "+ users.length);
+            //se usuario não existe busca info do facebook e cria usuario
+            if(!users.length && messagingEvent.sender.id != "228963060836739"){// 228963060836739 id do bot
+              console.log("DEBUG: faz facebook request");
               request({
                 uri: 'https://graph.facebook.com/v2.6/' + messagingEvent.sender.id,
                 method: 'GET',
                 qs: { access_token: PAGE_ACCESS_TOKEN , fields : 'first_name,last_name,profile_pic,locale,timezone,gender'}
 
               }, function(error, response, body){
-                  console.log("respota do facebook "+ response.statusCode);
+                  console.log("DEBUG: respota do facebook "+ response.statusCode);
 
                   if (!error && response.statusCode == 200) {
                     var fbUser = JSON.parse(body);
@@ -168,10 +171,76 @@ app.post('/webhook', function (req, res) {
             }
         });
 
+        // cria novo registro de sessão
+        console.log("DEBUG: cria registro na sessão");
+        var newUserSession = new UserSession({
+          sender_id : messagingEvent.sender.id,
+          receiver_id : messagingEvent.recipient.id,
+          body : messagingEvent.message,
+          last_payload: payload
+        });
+
+        newUserSession.save();
+
+        // busca mensagens com raference  = payload que usuario enviou
+        Message.find({"reference" : payload}).sort({"order": 1}).exec(function(err, docs){
+          console.log("DEBUG: busca mensagens com payload enviado. achou: " + docs.length);
+          //console.log("errors", err);
+
+           if(err) throw err;
+
+           // se não achou nenhuma mensagem com reference  = payload
+           if(!docs.length){
+             console.log("DEBUG: não achou nenhuma mensagem com payload: " + payload);
+             //busca nos registros de mensagem o ultimo payload que foi enviada pro usuario
+             UserSession.find({"receiver_id" : senderID}).limit(1).exec(function(err, usersession){//TODO: adicionar sort createdAt -1
+               console.log("DEBUG: busca registro de sessão pela ultima mensagem enviada para o usuario. achou : " + usersession.length);
+               if(usersession.length){
+                 //busca mensagem de erro comparando o ultimo payload enviado e mensagem que é mismatch
+                 Message.find({"reference" : usersession[0].last_payload, "mismatch" : true}).limit(1).sort({"order": 1}).exec(function(err, messages){
+                   console.log("DEBUG: busca mensagem de erro resgitrada para aquele payload achou " + messages.length);
+                   if(messages.length){
+                     messages.forEach(function (message) {
+                       var messagejson = {
+                         recipient: {
+                           id: senderID
+                         },
+                         message: JSON.parse(message["body"])
+                       };
+                       console.log("DEBUG: envia mensagem para usuario");
+                       enviarMensagem(senderID, messagejson, message["reference"]);
+                     });
+
+                   }
+                 });
+               }
+
+             });
+
+             // se achou mensagem
+           }else{
+             console.log("DEBUG: envia as mensagens cadastradas para o payload. total: " + docs.length);
+             // envia todas para usuario
+             docs.forEach(function (doc) {
+               var messagejson = {
+                 recipient: {
+                   id: senderID
+                 },
+                 message: JSON.parse(doc["body"])
+               };
+
+               enviarMensagem(senderID, messagejson, doc["reference"]);
+
+             });
+
+           }
+
+        });
 
 
 
-        if (messagingEvent.optin) {
+
+        /*if (messagingEvent.optin) {
           receivedAuthentication(messagingEvent);
         } else if (messagingEvent.message) {
           receivedMessage(messagingEvent);
@@ -185,7 +254,7 @@ app.post('/webhook', function (req, res) {
           receivedAccountLink(messagingEvent);
         } else {
           console.log("Webhook received unknown messagingEvent: ", messagingEvent);
-        }
+        }*/
       });
     });
 
@@ -314,7 +383,7 @@ function receivedMessage(event) {
 
   var payload = p =>  message.payload ? message.payload : message.text;
 
-  getDBmessages(senderID, payload);
+
 }
 
 
@@ -363,63 +432,21 @@ function receivedPostback(event) {
     console.log("Received postback for user %d and page %d with payload '%s' " +
     "at %d", senderID, recipientID, payload, timeOfPostback);
 
-    getDBmessages(senderID, payload);
+
 
 }
 
-class CurrentUser{
-    getUserName(user_id){
-      var username;
-      User.findOne({"user_id" : user_id}).select('first_name').exec(function(err, docs){
-        console.log("erro ",  err);
-        console.log("docs", docs);
-          username = "Bruno";
-      });
+function enviarMensagem(senderID, messagejson, payload){
 
-      return username;
-    }
-}
+  var newUserSession = new UserSession({
+    sender_id : "ROBOT",
+    receiver_id : senderID,
+    body : messagejson,
+    last_payload : payload
+  });
 
+  newUserSession.save();
 
-function getDBmessages(senderID, payload){
-
-
-     Message.find({"reference" : payload}).sort({"order": 1}).exec(function(err, docs){
-       //console.log("Find some messages", docs);
-       //console.log("errors", err);
-
-        if(err) throw err;
-        if(!docs.length){
-          User.findOne({"user_id" : senderID}).select('first_name').exec((err, docs) =>{
-              sendTextMessage(senderID, docs.first_name + " Tem umas coisas da linguagem humana que eu ainda não aprendi.  Pra agilizar nosso papo, escolha um desses:");
-          });
-
-
-
-
-        }
-
-          docs.forEach(function (doc) {
-            //console.log("message find", doc);
-
-            var messagejson = {
-              recipient: {
-                id: senderID
-              },
-              message: JSON.parse(doc["body"])
-            };
-
-            enviarMensagem(senderID, messagejson);
-
-          });
-
-      //      sendTextMessage(senderID, "(USER) Tem umas coisas da linguagem humana que eu ainda não aprendi.  Pra agilizar nosso papo, escolha um desses:");
-
-     });
-
-}
-
-function enviarMensagem(senderID, messagejson){
   sendTypingOn(senderID);
   setTimeout(function(){
     sendTypingOff(senderID);
