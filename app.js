@@ -139,7 +139,12 @@ app.post('/webhook', function (req, res) {
       // Iterate over each messaging event
       pageEntry.messaging.forEach(function(messagingEvent) {
 
-        var payload = p => messagingEvent.postback.payload ? messagingEvent.postback.payload : messagingEvent.message.text;
+        if(messagingEvent.postback.payload){
+          var payload = messagingEvent.postback.payload;
+        }else{
+          var payload = messagingEvent.message.text;
+        }
+
 
         // verifica se usuario existe
         User.find({"user_id": messagingEvent.sender.id}).exec(function(err, users){
@@ -187,7 +192,7 @@ app.post('/webhook', function (req, res) {
         // busca mensagens com raference  = payload que usuario enviou
         Message.find({"reference" : payload}).sort({"order": 1}).exec(function(err, docs){
           console.log("DEBUG: busca mensagens com payload enviado. achou: " + docs.length);
-          console.log("DEBUG: PAYLOAD: ", payload);
+
           //console.log("errors", err);
 
            if(err) throw err;
