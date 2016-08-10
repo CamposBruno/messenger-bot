@@ -139,6 +139,25 @@ app.post('/webhook', function (req, res) {
       // Iterate over each messaging event
       pageEntry.messaging.forEach(function(messagingEvent) {
 
+
+      if (messagingEvent.optin) {
+        console.log("OPTIN");
+        continue;
+      } else if (messagingEvent.message) {
+        receivedMessage(messagingEvent);
+      } else if (messagingEvent.delivery) {
+        console.log("DELIVERED");
+        continue;
+      } else if (messagingEvent.postback) {
+        receivedPostback(messagingEvent);
+      } else if (messagingEvent.read) {
+        console.log("READ");
+        continue;
+      } else if (messagingEvent.account_linking) {
+        console.log("account_linking");
+        continue;
+      }
+
         if(messagingEvent.postback){
           var payload = messagingEvent.postback.payload;
         }else{
