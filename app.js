@@ -187,6 +187,7 @@ app.post('/webhook', function (req, res) {
         // busca mensagens com raference  = payload que usuario enviou
         Message.find({"reference" : payload}).sort({"order": 1}).exec(function(err, docs){
           console.log("DEBUG: busca mensagens com payload enviado. achou: " + docs.length);
+          console.log("DEBUG: PAYLOAD: ", payload);
           //console.log("errors", err);
 
            if(err) throw err;
