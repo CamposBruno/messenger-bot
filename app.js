@@ -235,7 +235,7 @@ app.post('/webhook', function (req, res) {
                docs.forEach(function (doc) {
                  var messagejson = {
                    recipient: {
-                     id: senderID
+                     id: messagingEvent.sender.id
                    },
                    message: JSON.parse(doc["body"])
                  };
