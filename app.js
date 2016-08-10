@@ -379,7 +379,7 @@ function getDBmessages(senderID, payload){
         console.log("docs: ", docs);
 
         if(!docs.length){
-          sendTextMessage(senderID, "(USER) Tem umas coisas da linguagem humana que eu ainda não aprendi.  Pra agilizar nosso papo, escolha um desses:");
+          sendTextMessage(senderID, User.first_name + " Tem umas coisas da linguagem humana que eu ainda não aprendi.  Pra agilizar nosso papo, escolha um desses:");
         }
 
           docs.forEach(function (doc) {
