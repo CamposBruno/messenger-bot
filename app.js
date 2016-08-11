@@ -479,7 +479,7 @@ function enviarMensagem(senderID, messagejson, payload, index){
     sendTypingOn(senderID);
     sendTypingOff(senderID);
     callSendAPI(messagejson);
-  }, index * 2000);
+  }, index * 3000);
 
 }
 
