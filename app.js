@@ -41,6 +41,7 @@ var userSchema = mongoose.Schema({
   locale: { type: String },
   timezone: { type: String },
   gender: { type: String }
+  
 },
 {
     timestamps: true

@@ -6,13 +6,29 @@ curl -X POST -H "Content-Type: application/json" -d '{
   "call_to_actions":[
     {
       "type":"postback",
-      "title":"Falar com o Deco",
+      "title":"Get started",
       "payload":"START_BOT"
     },
     {
+      "type":"web_url",
+      "title":"Mapa Wi-fi aberto",
+      "url":"http://wifilivre.sp.gov.br/"
+    },
+    {
+      "type":"web_url",
+      "title":"Bora pro corre",
+      "url":"http://google.com/?s=bora+pro+corre"
+    },
+    {
       "type":"postback",
-      "title":"Falar com a Telefônica",
-      "payload":"DEACTIVATE_BOT"
+      "title":"Progresso",
+      "payload":"PROGRESS"
+    },
+    {
+      "type":"postback",
+      "title":"Deco, vou ali",
+      "payload":"PAUSE"
     }
+
   ]
 }' "https://graph.facebook.com/v2.6/me/thread_settings?access_token=EAAEBuZAO0QT0BAABLvLXnrak42NxaZB91FDHWHP2oyRnYcfA6Qp0ZAmzOE1tcIFoNBaf6c9Na8TDySWcytjMsw3ZCMl2Uy98EBmoQKsikaUFGLTgpdvbCLcc08T4y5PhZCJEeof5ZAhecmVIkZByZA4VmyPaDaDnhHuEcOkOHjAZAQQZDZD"
