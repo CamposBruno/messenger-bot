@@ -161,7 +161,7 @@ app.post('/webhook', function (req, res) {
         if(messagingEvent.postback){
           var payload = messagingEvent.postback.payload;
         }else{
-          var payload = messagingEvent.message.text;
+          var payload = null;
         }
 
 
@@ -229,7 +229,7 @@ app.post('/webhook', function (req, res) {
                    //busca mensagem de erro comparando o ultimo payload enviado e mensagem que é mismatch
                    Message.find({"reference" : usersession[0].last_payload, "mismatch" : true}).sort({"order": 1}).exec(function(err, messages){
                      console.log("DEBUG: busca mensagem de erro resgitrada para aquele payload (" +usersession[0].last_payload+ ")  achou " + messages.length);
-                     console.log("DEBUG: LAST PAYLOAD",  usersession);
+                     console.log("DEBUG: LAST PAYLOAD",  usersession[0].last_payload);
                      if(messages.length){
                        messages.forEach(function (message, index) {
                          var messagejson = {
