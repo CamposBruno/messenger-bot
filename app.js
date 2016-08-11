@@ -220,7 +220,7 @@ app.post('/webhook', function (req, res) {
                    Message.find({"reference" : usersession[0].last_payload, "mismatch" : true}).sort({"order": 1}).exec(function(err, messages){
                      console.log("DEBUG: busca mensagem de erro resgitrada para aquele payload achou " + messages.length);
                      if(messages.length){
-                       messages.forEach(function (message) {
+                       messages.forEach(function (message, index) {
                          var messagejson = {
                            recipient: {
                              id: messagingEvent.sender.id
@@ -228,7 +228,7 @@ app.post('/webhook', function (req, res) {
                            message: JSON.parse(message["body"])
                          };
                          console.log("DEBUG: envia mensagem para usuario");
-                         enviarMensagem(messagingEvent.sender.id, messagejson, message["reference"]);
+                         enviarMensagem(messagingEvent.sender.id, messagejson, message["reference"], index);
                        });
 
                      }
@@ -241,7 +241,7 @@ app.post('/webhook', function (req, res) {
              }else{
                console.log("DEBUG: envia as mensagens cadastradas para o payload. total: " + docs.length);
                // envia todas para usuario
-               docs.forEach(function (doc) {
+               docs.forEach(function (doc, index) {
                  var messagejson = {
                    recipient: {
                      id: messagingEvent.sender.id
@@ -249,7 +249,7 @@ app.post('/webhook', function (req, res) {
                    message: JSON.parse(doc["body"])
                  };
 
-                 enviarMensagem(messagingEvent.sender.id, messagejson, doc["reference"]);
+                 enviarMensagem(messagingEvent.sender.id, messagejson, doc["reference"], index);
 
                });
 
@@ -463,7 +463,7 @@ function receivedPostback(event) {
 
 }
 
-function enviarMensagem(senderID, messagejson, payload){
+function enviarMensagem(senderID, messagejson, payload, index){
 
   var newUserSession = new UserSession({
     sender_id : "ROBOT",
@@ -474,11 +474,12 @@ function enviarMensagem(senderID, messagejson, payload){
 
   newUserSession.save();
 
-  sendTypingOn(senderID);
+
   setTimeout(function(){
+    sendTypingOn(senderID);
     sendTypingOff(senderID);
     callSendAPI(messagejson);
-  }, 1000);
+  }, index * 2000);
 
 }
 
