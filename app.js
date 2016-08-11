@@ -954,7 +954,7 @@ function callSendAPI(messageData) {
         recipientId);
       }
     } else {
-      console.error("ERROR CAL SEND API ", response);
+      console.error("ERROR CAL SEND API ", response.statusCode);
     }
   });
 }
