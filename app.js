@@ -24,6 +24,9 @@ var messageSchema = mongoose.Schema({
   body : { type: String, required: true }, // json message template
   order: { type: Number },
   mismatch : {type: Boolean}
+},
+{
+    timestamps: true
 });
 
 // Store song documents in a collection called "songs"
@@ -38,6 +41,9 @@ var userSchema = mongoose.Schema({
   locale: { type: String },
   timezone: { type: String },
   gender: { type: String }
+},
+{
+    timestamps: true
 });
 
 var User = mongoose.model('user', userSchema);
@@ -49,6 +55,9 @@ var userSessionSchema = mongoose.Schema({
   body : { type: String },
   last_payload : { type: String } // ultima opção que usuario enviou
 
+},
+{
+    timestamps: true
 });
 
 var UserSession = mongoose.model('user_sessions', userSessionSchema);
