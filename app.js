@@ -41,7 +41,7 @@ var userSchema = mongoose.Schema({
   locale: { type: String },
   timezone: { type: String },
   gender: { type: String }
-  
+
 },
 {
     timestamps: true
@@ -223,7 +223,7 @@ app.post('/webhook', function (req, res) {
              if(!docs.length){
                console.log("DEBUG: não achou nenhuma mensagem com payload: " + payload);
                //busca nos registros de mensagem o ultimo payload que foi enviada pro usuario
-               UserSession.find({"receiver_id" : messagingEvent.sender.id}).limit(1).exec(function(err, usersession){//TODO: adicionar sort createdAt -1
+               UserSession.find({"receiver_id" : messagingEvent.sender.id}).sort({"createdAt" : -1}).limit(1).exec(function(err, usersession){//TODO: adicionar sort createdAt -1
                  console.log("DEBUG: busca registro de sessão pela ultima mensagem enviada para o usuario. achou : " + usersession.length);
                  if(usersession.length){
                    //busca mensagem de erro comparando o ultimo payload enviado e mensagem que é mismatch
