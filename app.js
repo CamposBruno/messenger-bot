@@ -229,7 +229,7 @@ app.post('/webhook', function (req, res) {
                     if(usersession.length > 1){
 
                       //busca mensagem de erro comparando o ultimo payload enviado e mensagem que é mismatch
-                      Message.find({"reference" : usersession[1].last_payload}).sort({"order": 1}).exec(function(err, messages){
+                      Message.find({"reference" : usersession[1].last_payload , "mismatch" : false}).sort({"order": 1}).exec(function(err, messages){
                         console.log("DEBUG: busca mensagens do ultimo nivel que usuario estava antes de pausar. achou: " + messages.length);
 
                         if(messages.length){
