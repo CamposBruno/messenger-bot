@@ -236,7 +236,8 @@ app.post('/webhook', function (req, res) {
 
                           messages.forEach(function (message, index) {
 
-                            var str = message["body"].match(/(USER)/g);
+                            var str = message["body"].match(/\(USER\)/g);
+                            console.log("DEBUG : achou occorencias (USER) . qtde:" + str.length);
                             if(str.length){
                               User.findOne({"user_id": messagingEvent.sender.id}).exec(function(err, user){
                                 if (err) throw err;
