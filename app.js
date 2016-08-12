@@ -221,7 +221,7 @@ app.post('/webhook', function (req, res) {
              // se não achou nenhuma mensagem com reference  = payload
              if(!docs.length){
                console.log("DEBUG: não achou nenhuma mensagem com payload: " + payload);
-               // se usuario pausoux
+               // se usuario pausou
                if(payload == "RESTART"){
                  console.log("DEBUG: payload RESTART");
                   UserSession.find({"receiver_id" : messagingEvent.sender.id}).sort({"createdAt" : -1}).limit(2).exec(function(err, usersession){
@@ -233,20 +233,7 @@ app.post('/webhook', function (req, res) {
                         console.log("DEBUG: busca mensagens do ultimo nivel que usuario estava antes de pausar. achou: " + messages.length);
 
                         if(messages.length){
-
                           messages.forEach(function (message, index) {
-
-                            var str = message["body"].match(/\(USER\)/g);
-                            console.log("DEBUG : achou occorencias (USER) . qtde:" + str.length);
-                            if(str.length){
-                              User.findOne({"user_id": messagingEvent.sender.id}).exec(function(err, user){
-                                if (err) throw err;
-
-                                message["body"] = message["body"].replace(/\(USER\)/g, user.first_name );
-                                console.log("DEBUG : " + message["body"]);
-                              });
-                            }
-
                             var messagejson = {
                               recipient: {
                                 id: messagingEvent.sender.id
@@ -276,18 +263,6 @@ app.post('/webhook', function (req, res) {
                        console.log("DEBUG: LAST PAYLOAD",  usersession[0].last_payload);
                        if(messages.length){
                          messages.forEach(function (message, index) {
-
-                           var str = message["body"].match(/\(USER\)/g);
-                           console.log("DEBUG : achou occorencias (USER) . qtde:" + str.length);
-                           if(str.length){
-                             User.findOne({"user_id": messagingEvent.sender.id}).exec(function(err, user){
-                               if (err) throw err;
-
-                               message["body"] = message["body"].replace(/\(USER\)/g, user.first_name );
-                               console.log("DEBUG : " + message["body"]);
-                             });
-                           }
-
                            var messagejson = {
                              recipient: {
                                id: messagingEvent.sender.id
@@ -314,19 +289,6 @@ app.post('/webhook', function (req, res) {
                console.log("DEBUG: envia as mensagens cadastradas para o payload. total: " + docs.length);
                // envia todas para usuario
                docs.forEach(function (doc, index) {
-
-                 var str = doc["body"].match(/\(USER\)/g);
-                 console.log("DEBUG : achou occorencias (USER) . qtde:" + str.length);
-                 if(str.length){
-                   User.findOne({"user_id": messagingEvent.sender.id}).exec(function(err, user){
-                     if (err) throw err;
-
-                     doc["body"] = doc["body"].replace(/\(USER\)/g, user.first_name );
-                     console.log("DEBUG : " + doc["body"]);
-                   });
-                 }
-
-
                  var messagejson = {
                    recipient: {
                      id: messagingEvent.sender.id
