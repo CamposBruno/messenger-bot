@@ -315,14 +315,14 @@ app.post('/webhook', function (req, res) {
                // envia todas para usuario
                docs.forEach(function (doc, index) {
 
-                 var str = message["body"].match(/\(USER\)/g);
+                 var str = doc["body"].match(/\(USER\)/g);
                  console.log("DEBUG : achou occorencias (USER) . qtde:" + str.length);
                  if(str.length){
                    User.findOne({"user_id": messagingEvent.sender.id}).exec(function(err, user){
                      if (err) throw err;
 
-                     message["body"] = message["body"].replace(/\(USER\)/g, user.first_name );
-                     console.log("DEBUG : " + message["body"]);
+                     doc["body"] = doc["body"].replace(/\(USER\)/g, user.first_name );
+                     console.log("DEBUG : " + doc["body"]);
                    });
                  }
 
