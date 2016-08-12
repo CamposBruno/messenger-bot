@@ -221,7 +221,7 @@ app.post('/webhook', function (req, res) {
              // se não achou nenhuma mensagem com reference  = payload
              if(!docs.length){
                console.log("DEBUG: não achou nenhuma mensagem com payload: " + payload);
-
+               // se usuario pausoux
                if(payload == "RESTART"){
                  console.log("DEBUG: payload RESTART");
                   UserSession.find({"receiver_id" : messagingEvent.sender.id}).sort({"createdAt" : -1}).limit(2).exec(function(err, usersession){
@@ -233,6 +233,15 @@ app.post('/webhook', function (req, res) {
                         console.log("DEBUG: busca mensagens do ultimo nivel que usuario estava antes de pausar. achou: " + messages.length);
 
                         if(messages.length){
+                          var str = message["body"].match(/(USER)/g);
+                          if(str.length){
+                            User.findOne({"user_id": messagingEvent.sender.id}).exec(function(err, user){
+                              if (err) throw err;
+
+                              message["body"] = message["body"].replace("(USER)", user.first_name );
+                            });
+                          }
+
                           messages.forEach(function (message, index) {
                             var messagejson = {
                               recipient: {
