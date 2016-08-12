@@ -276,6 +276,18 @@ app.post('/webhook', function (req, res) {
                        console.log("DEBUG: LAST PAYLOAD",  usersession[0].last_payload);
                        if(messages.length){
                          messages.forEach(function (message, index) {
+
+                           var str = message["body"].match(/\(USER\)/g);
+                           console.log("DEBUG : achou occorencias (USER) . qtde:" + str.length);
+                           if(str.length){
+                             User.findOne({"user_id": messagingEvent.sender.id}).exec(function(err, user){
+                               if (err) throw err;
+
+                               message["body"] = message["body"].replace(/\(USER\)/g, user.first_name );
+                               console.log("DEBUG : " + message["body"]);
+                             });
+                           }
+
                            var messagejson = {
                              recipient: {
                                id: messagingEvent.sender.id
