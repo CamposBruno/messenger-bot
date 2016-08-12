@@ -152,7 +152,6 @@ app.post('/webhook', function (req, res) {
 
       if (messagingEvent.optin ||
           messagingEvent.delivery ||
-          messagingEvent.delivery ||
           messagingEvent.read ||
           messagingEvent.account_linking){
             console.log("DESNECESSÁRIO");
@@ -222,31 +221,68 @@ app.post('/webhook', function (req, res) {
              // se não achou nenhuma mensagem com reference  = payload
              if(!docs.length){
                console.log("DEBUG: não achou nenhuma mensagem com payload: " + payload);
-               //busca nos registros de mensagem o ultimo payload que foi enviada pro usuario
-               UserSession.find({"receiver_id" : messagingEvent.sender.id}).sort({"createdAt" : -1}).limit(1).exec(function(err, usersession){//TODO: adicionar sort createdAt -1
-                 console.log("DEBUG: busca registro de sessão pela ultima mensagem enviada para o usuario. achou : " + usersession.length);
-                 if(usersession.length){
-                   //busca mensagem de erro comparando o ultimo payload enviado e mensagem que é mismatch
-                   Message.find({"reference" : usersession[0].last_payload, "mismatch" : true}).sort({"order": 1}).exec(function(err, messages){
-                     console.log("DEBUG: busca mensagem de erro resgitrada para aquele payload (" +usersession[0].last_payload+ ")  achou " + messages.length);
-                     console.log("DEBUG: LAST PAYLOAD",  usersession[0].last_payload);
-                     if(messages.length){
-                       messages.forEach(function (message, index) {
-                         var messagejson = {
-                           recipient: {
-                             id: messagingEvent.sender.id
-                           },
-                           message: JSON.parse(message["body"])
-                         };
-                         console.log("DEBUG: envia mensagem para usuario");
-                         enviarMensagem(messagingEvent.sender.id, messagejson, message["reference"], index);
-                       });
 
-                     }
-                   });
-                 }
+               if(payload == "RESTART"){
+                 console.log("DEBUG: payload RESTART");
+                  UserSession.find({"receiver_id" : messagingEvent.sender.id}).sort({"createdAt" : -1}).limit(2).exec(function(err, usersession){
+                    console.log("DEBUG: busca registro de sessão pelas duas ultimas mensagens enviadas para o usuario. achou : " + usersession.length);
+                    if(usersession.length > 1){
 
-               });
+                      //busca mensagem de erro comparando o ultimo payload enviado e mensagem que é mismatch
+                      Message.find({"reference" : usersession[1].last_payload}).sort({"order": 1}).exec(function(err, messages){
+                        console.log("DEBUG: busca mensagens do ultimo nivel que usuario estava antes de pausar. achou: " + messages.length);
+
+                        if(messages.length){
+                          messages.forEach(function (message, index) {
+                            var messagejson = {
+                              recipient: {
+                                id: messagingEvent.sender.id
+                              },
+                              message: JSON.parse(message["body"])
+                            };
+                            console.log("DEBUG: envia mensagem para usuario");
+                            enviarMensagem(messagingEvent.sender.id, messagejson, message["reference"], index);
+                          });
+
+                        }
+
+                      });
+                    }
+
+                  });
+
+               }else{
+
+                 //busca nos registros de mensagem o ultimo payload que foi enviada pro usuario
+                 UserSession.find({"receiver_id" : messagingEvent.sender.id}).sort({"createdAt" : -1}).limit(1).exec(function(err, usersession){//TODO: adicionar sort createdAt -1
+                   console.log("DEBUG: busca registro de sessão pela ultima mensagem enviada para o usuario. achou : " + usersession.length);
+                   if(usersession.length){
+                     //busca mensagem de erro comparando o ultimo payload enviado e mensagem que é mismatch
+                     Message.find({"reference" : usersession[0].last_payload, "mismatch" : true}).sort({"order": 1}).exec(function(err, messages){
+                       console.log("DEBUG: busca mensagem de erro resgitrada para aquele payload (" +usersession[0].last_payload+ ")  achou " + messages.length);
+                       console.log("DEBUG: LAST PAYLOAD",  usersession[0].last_payload);
+                       if(messages.length){
+                         messages.forEach(function (message, index) {
+                           var messagejson = {
+                             recipient: {
+                               id: messagingEvent.sender.id
+                             },
+                             message: JSON.parse(message["body"])
+                           };
+                           console.log("DEBUG: envia mensagem para usuario");
+                           enviarMensagem(messagingEvent.sender.id, messagejson, message["reference"], index);
+                         });
+
+                       }
+                     });
+                   }
+
+                 });
+
+
+               }
+
+
 
                // se achou mensagem
              }else{
