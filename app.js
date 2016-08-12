@@ -233,16 +233,19 @@ app.post('/webhook', function (req, res) {
                         console.log("DEBUG: busca mensagens do ultimo nivel que usuario estava antes de pausar. achou: " + messages.length);
 
                         if(messages.length){
-                          var str = message["body"].match(/(USER)/g);
-                          if(str.length){
-                            User.findOne({"user_id": messagingEvent.sender.id}).exec(function(err, user){
-                              if (err) throw err;
-
-                              message["body"] = message["body"].replace("(USER)", user.first_name );
-                            });
-                          }
 
                           messages.forEach(function (message, index) {
+
+                            var str = message["body"].match(/(USER)/g);
+                            if(str.length){
+                              User.findOne({"user_id": messagingEvent.sender.id}).exec(function(err, user){
+                                if (err) throw err;
+
+                                message["body"] = message["body"].replace(/\(USER\)/g, user.first_name );
+                                console.log("DEBUG : " + message["body"]);
+                              });
+                            }
+
                             var messagejson = {
                               recipient: {
                                 id: messagingEvent.sender.id
