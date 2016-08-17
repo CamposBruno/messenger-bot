@@ -241,7 +241,7 @@ app.post('/webhook', function (req, res) {
                               message: JSON.parse(message["body"])
                             };
                             console.log("DEBUG: envia mensagem para usuario");
-                            enviarMensagem(messagingEvent.sender.id, messagejson, message["reference"], index);
+                            enviarMensagem(messagingEvent.sender.id, messagejson, message, index);
                           });
 
                         }
@@ -270,7 +270,7 @@ app.post('/webhook', function (req, res) {
                              message: JSON.parse(message["body"])
                            };
                            console.log("DEBUG: envia mensagem para usuario");
-                           enviarMensagem(messagingEvent.sender.id, messagejson, message["reference"], index);
+                           enviarMensagem(messagingEvent.sender.id, messagejson, message, index);
                          });
 
                        }
@@ -296,7 +296,7 @@ app.post('/webhook', function (req, res) {
                    message: JSON.parse(doc["body"])
                  };
 
-                 enviarMensagem(messagingEvent.sender.id, messagejson, doc["reference"], index);
+                 enviarMensagem(messagingEvent.sender.id, messagejson, doc, index);
 
                });
 
@@ -510,23 +510,28 @@ function receivedPostback(event) {
 
 }
 
-function enviarMensagem(senderID, messagejson, payload, index){
+function enviarMensagem(senderID, messagejson, message, index){
+
+  // busca pela ultima sesão que foi enviada para o usuario
+  // e enquanto o campo delivered for false espera mais 1 segundo
+
 
   var newUserSession = new UserSession({
     sender_id : "ROBOT",
     receiver_id : senderID,
     body : JSON.stringify(messagejson),
-    last_payload : payload
+    last_payload : message["referece"]
   });
 
   newUserSession.save();
 
+  var timeout = (message["timeout"]) ? message["timeout"] : 3000;
 
   setTimeout(function(){
     sendTypingOn(senderID);
     sendTypingOff(senderID);
     callSendAPI(messagejson);
-  }, index * 3000);
+  }, index * timeout);
 
 }
 
