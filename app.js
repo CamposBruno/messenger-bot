@@ -532,8 +532,8 @@ function enviarMensagem(senderID, messagejson, message, index){
 
   console.log("timeout : " + timeout);
 
+  sendTypingOn(senderID);
   setTimeout(function(){
-    sendTypingOn(senderID);
     sendTypingOff(senderID);
     callSendAPI(messagejson);
   }, (index + 1 ) * timeout);
