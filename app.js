@@ -295,7 +295,7 @@ app.post('/webhook', function (req, res) {
                    },
                    message: JSON.parse(doc["body"])
                  };
-                 console.log("DEBUG: DOC", messagejson);
+
                  enviarMensagem(messagingEvent.sender.id, messagejson, doc, index);
 
                });
@@ -520,13 +520,13 @@ function enviarMensagem(senderID, messagejson, message, index){
     sender_id : "ROBOT",
     receiver_id : senderID,
     body : JSON.stringify(messagejson),
-    last_payload : message.referece
+    last_payload : message["referece"]
   });
 
   newUserSession.save();
 
-  console.log("DEBUG: MESSAGE ", message.timeout);
-  var timeout = message.timeout ? message.timeout : 3000;
+  console.log("DEBUG: MESSAGE ", message["timeout"]);
+  var timeout = message["timeout"] ? message["timeout"] : 3000;
 
   console.log("timeout : " + timeout);
 
