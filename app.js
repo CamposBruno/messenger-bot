@@ -525,7 +525,7 @@ function enviarMensagem(senderID, messagejson, message, index){
 
   newUserSession.save();
 
-  console.log("DEBUG: MESSAGE ", message["timeout"]);
+  console.log("DEBUG: MESSAGE ", message);
   var timeout = message["timeout"] ? message["timeout"] : 3000;
 
   console.log("timeout : " + timeout);
