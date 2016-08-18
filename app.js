@@ -527,7 +527,7 @@ function enviarMensagem(senderID, messagejson, message, index){
   newUserSession.save();
 
 
-  if(sjson.match(/\(USER\)g/)){
+  if(sjson.match(/\(USER\)g/).length){
     console.log("tem (USER) na mensagem");
 
     User.findOne({"user_id": senderID}).exec(function(err, user){
@@ -545,6 +545,7 @@ function enviarMensagem(senderID, messagejson, message, index){
     });
 
   }else{
+    console.log("não achou (USER) na msg");
     setTimeout(function(){
       sendTypingOn(senderID);
       sendTypingOff(senderID);
