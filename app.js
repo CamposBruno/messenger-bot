@@ -295,7 +295,7 @@ app.post('/webhook', function (req, res) {
                    },
                    message: JSON.parse(doc["body"])
                  };
-
+                 console("DEBUG: DOC", doc);
                  enviarMensagem(messagingEvent.sender.id, messagejson, doc, index);
 
                });
