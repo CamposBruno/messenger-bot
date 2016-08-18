@@ -528,7 +528,7 @@ function enviarMensagem(senderID, messagejson, message, index){
   console.log("DEBUG: MESSAGE ", message);
   var timeout = message.tempo ? message.tempo : 3000;
 
-  console.log("timeout : " + timeout);
+  console.log("timeout : " + message.tempo);
 
   setTimeout(function(){
     sendTypingOn(senderID);
