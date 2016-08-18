@@ -23,7 +23,8 @@ var messageSchema = mongoose.Schema({
   reference: { type: String, required: true },
   body : { type: String, required: true }, // json message template
   order: { type: Number },
-  mismatch : {type: Boolean}
+  mismatch : {type: Boolean},
+  tempo : {type: Number}
 },
 {
     timestamps: true
