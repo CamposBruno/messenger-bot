@@ -295,7 +295,8 @@ app.post('/webhook', function (req, res) {
                    },
                    message: JSON.parse(doc["body"])
                  };
-                 console.log("DEBUG: PORRA ", doc);
+                 console.log("DEBUG: PORRA ", doc["body"]);
+                 console.log("DEBUG: PORRA2 ", doc["tempo"]);
                  enviarMensagem(messagingEvent.sender.id, messagejson, doc, index);
 
                });
