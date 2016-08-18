@@ -514,9 +514,8 @@ function receivedPostback(event) {
 
 function enviarMensagem(senderID, messagejson, message, index){
 
-  // busca pela ultima sesão que foi enviada para o usuario
-  // e enquanto o campo delivered for false espera mais 1 segundo
-
+  var timeout = message.tempo ? message.tempo : 3000;
+  var sjson = JSON.stringify(messagejson);
 
   var newUserSession = new UserSession({
     sender_id : "ROBOT",
@@ -527,17 +526,31 @@ function enviarMensagem(senderID, messagejson, message, index){
 
   newUserSession.save();
 
-  console.log("DEBUG: MESSAGE ", message);
-  var timeout = message.tempo ? message.tempo : 3000;
 
-  console.log("timeout : " + timeout);
+  if(sjson.match(/\(USER\)g/)){
+    console.log("tem (USER) na mensagem");
 
-  sendTypingOn(senderID);
-  setTimeout(function(){
-    sendTypingOff(senderID);
-    callSendAPI(messagejson);
-  }, (index + 1 ) * timeout);
+    User.findOne({"user_id": senderID}).exec(function(err, user){
+      sjson.replace(/\(USER\)g/, user.first_name);
+      messagejson = JSON.parse(sjson);
 
+      console.log("DEBUG: user : " + user.first_name);
+
+      setTimeout(function(){
+        sendTypingOn(senderID);
+        sendTypingOff(senderID);
+        callSendAPI(messagejson);
+      }, (index + 1 ) * timeout);
+
+    });
+
+  }else{
+    setTimeout(function(){
+      sendTypingOn(senderID);
+      sendTypingOff(senderID);
+      callSendAPI(messagejson);
+    }, (index + 1 ) * timeout);
+  }
 }
 
 /*
