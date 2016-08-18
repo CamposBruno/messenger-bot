@@ -536,7 +536,7 @@ function enviarMensagem(senderID, messagejson, message, index){
     sendTypingOn(senderID);
     sendTypingOff(senderID);
     callSendAPI(messagejson);
-  }, index * timeout);
+  }, (index + 1 ) * timeout);
 
 }
 
