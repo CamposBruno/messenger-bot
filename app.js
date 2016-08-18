@@ -520,7 +520,7 @@ function enviarMensagem(senderID, messagejson, message, index){
     sender_id : "ROBOT",
     receiver_id : senderID,
     body : JSON.stringify(messagejson),
-    last_payload : message.referece
+    last_payload : message.reference
   });
 
   newUserSession.save();
