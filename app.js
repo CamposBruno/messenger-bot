@@ -527,11 +527,11 @@ function enviarMensagem(senderID, messagejson, message, index){
   newUserSession.save();
 
 
-  if(sjson.match(/\(USER\)g/).length){
+  if(sjson.match(/\(USER\)/g).length){
     console.log("tem (USER) na mensagem");
 
     User.findOne({"user_id": senderID}).exec(function(err, user){
-      sjson.replace(/\(USER\)g/, user.first_name);
+      sjson.replace(/\(USER\)/g, user.first_name);
       messagejson = JSON.parse(sjson);
 
       console.log("DEBUG: user : " + user.first_name);
