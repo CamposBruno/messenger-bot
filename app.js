@@ -527,7 +527,7 @@ function enviarMensagem(senderID, messagejson, message, index){
   newUserSession.save();
 
 
-  if(sjson.match(/\(USER\)/g)){ 
+  if(sjson.match(/\(USER\)/g)){
     console.log("tem (USER) na mensagem");
 
     User.findOne({"user_id": senderID}).exec(function(err, user){
@@ -1036,5 +1036,26 @@ function callSendAPI(messageData) {
 app.listen(app.get('port'), function() {
   console.log('Node app is running on port', app.get('port'));
 });
+
+
+
+app.post('/insert_message', function(req, res) {
+  var data = req.body;
+
+  // Make sure this is a page subscription
+  if (data.object == 'page') {
+    // Iterate over each entry
+    // There may be multiple if batched
+    data.entry.forEach(function(pageEntry) {
+      var pageID = pageEntry.id;
+      var timeOfEvent = pageEntry.time;
+
+      console.log("PAGE: ", pageEntry);
+    });
+  }
+
+
+});
+
 
 module.exports = app;
