@@ -1018,7 +1018,9 @@ function callSendAPI(messageData, message) {
         last_payload : message.next_reference
       });
 
-      newUserSession.save();
+      newUserSession.save(function(err , doc){
+        if(err) throw err;
+      });
 
 
 
