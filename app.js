@@ -12,6 +12,7 @@
 
 'use strict';
 
+
 // ------------- BEGIN MODEL ---------------
 var mongoose = require('mongoose');
 var mongodbUri = 'mongodb://heroku_2w56zwxb:iv2ghrpt8nfs7m8vdnu2tpte0t@ds145245.mlab.com:45245/heroku_2w56zwxb';
@@ -21,6 +22,7 @@ mongoose.connect(mongodbUri);
 
 var messageSchema = mongoose.Schema({
   reference: { type: String, required: true },
+  next_reference : {type: String},
   body : { type: String, required: true }, // json message template
   order: { type: Number },
   mismatch : {type: Boolean},
@@ -296,8 +298,7 @@ app.post('/webhook', function (req, res) {
                    },
                    message: JSON.parse(doc["body"])
                  };
-                 console.log("DEBUG: PORRA ", doc["body"]);
-                 console.log("DEBUG: PORRA2 ", doc["tempo"]);
+
                  enviarMensagem(messagingEvent.sender.id, messagejson, doc, index);
 
                });
@@ -521,7 +522,7 @@ function enviarMensagem(senderID, messagejson, message, index){
     sender_id : "ROBOT",
     receiver_id : senderID,
     body : JSON.stringify(messagejson),
-    last_payload : message.reference
+    last_payload : message.next_reference
   });
 
   newUserSession.save();
