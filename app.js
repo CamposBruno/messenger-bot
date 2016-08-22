@@ -56,7 +56,6 @@ var User = mongoose.model('user', userSchema);
 var userSessionSchema = mongoose.Schema({
   sender_id : { type: String, required: true },
   receiver_id : { type: String, required: true }, // nivel do menu que usuario está
-  message_id : { type: String },
   body : { type: String },
   last_payload : { type: String } // ultima opção que usuario enviou
 
@@ -260,7 +259,7 @@ app.post('/webhook', function (req, res) {
                  //busca nos registros de mensagem o ultimo payload que foi enviada pro usuario
                  UserSession.find({"receiver_id" : messagingEvent.sender.id}).sort({"createdAt" : -1}).limit(1).exec(function(err, usersession){//TODO: adicionar sort createdAt -1
                    console.log("DEBUG: busca registro de sessão pela ultima mensagem enviada para o usuario. achou : " + usersession.length);
-                   if(usersession.length && usersession[0].delivered){
+                   if(usersession.length){
                      //busca mensagem de erro comparando o ultimo payload enviado e mensagem que é mismatch
                      Message.find({"reference" : usersession[0].last_payload, "mismatch" : true}).sort({"order": 1}).exec(function(err, messages){
                        console.log("DEBUG: busca mensagem de erro resgitrada para aquele payload (" +usersession[0].last_payload+ ")  achou " + messages.length);
@@ -519,6 +518,17 @@ function enviarMensagem(senderID, messagejson, message, index){
   var timeout = message.tempo ? message.tempo : 3000;
   var sjson = JSON.stringify(messagejson);
 
+  var newUserSession = new UserSession({
+    sender_id : "ROBOT",
+    receiver_id : senderID,
+    body : JSON.stringify(messagejson),
+    last_payload : message.next_reference
+  });
+
+  newUserSession.save(function(err, doc){
+    if(err) throw err;
+  });
+
 
   if(sjson.match(/\(USER\)/g)){
     console.log("tem (USER) na mensagem");
@@ -532,7 +542,7 @@ function enviarMensagem(senderID, messagejson, message, index){
       setTimeout(function(){
         sendTypingOn(senderID);
         sendTypingOff(senderID);
-        callSendAPI(messagejson, message);
+        callSendAPI(messagejson);
       }, (index + 1 ) * timeout);
 
     });
@@ -542,7 +552,7 @@ function enviarMensagem(senderID, messagejson, message, index){
     setTimeout(function(){
       sendTypingOn(senderID);
       sendTypingOff(senderID);
-      callSendAPI(messagejson, message);
+      callSendAPI(messagejson);
     }, (index + 1 ) * timeout);
   }
 }
@@ -990,7 +1000,7 @@ function getUser (userID){
  * get the message id in a response
  *
  */
-function callSendAPI(messageData, message) {
+function callSendAPI(messageData) {
 
 
 
@@ -1007,20 +1017,6 @@ function callSendAPI(messageData, message) {
     if (!error && response.statusCode == 200) {
       var recipientId = body.recipient_id;
       var messageId = body.message_id;
-
-
-
-      var newUserSession = new UserSession({
-        sender_id : "ROBOT",
-        receiver_id : recipientId,
-        message_id : messageId,
-        body : JSON.stringify(messageData),
-        last_payload : message.next_reference
-      });
-
-      newUserSession.save(function(err , doc){
-        if(err) throw err;
-      });
 
 
 
