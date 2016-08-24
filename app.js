@@ -1104,11 +1104,11 @@ var cron = require('node-cron');
 cron.schedule('*/2 * * * *', function(){
   console.log('CRON: running a task every two minutes');
   // usuarios inativos por 10 min
-  user_data.findIdleUser(function(err, sessions){
+  /*userdata.findIdleUser(function(err, sessions){
     var newDateObj = new Date(Date.now() - minutes*60000);
     if(sessions && sessions.length){
       console.log("DEBUG: achou usuarios idle : "+ sessions.length);
-      /*sessions.forEach(function(session, index){
+      sessions.forEach(function(session, index){
         if(session.createdAt > newDateObj){
           if(session.last_payload  != "VOTE_BOM" ||
            session.last_payload  != "VOTE_NORMAL" ||
@@ -1116,9 +1116,9 @@ cron.schedule('*/2 * * * *', function(){
              console.log("DEBUG: ENVIA MSG PARA "+ session.user_id + " PAYLOAD : "+ session.last_payload);
            }
         }
-      });*/
+      });
     }
-  });
+  });*/
 
 });
 
