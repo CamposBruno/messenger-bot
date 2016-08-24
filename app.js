@@ -66,6 +66,13 @@ var userSessionSchema = mongoose.Schema({
 
 var UserSession = mongoose.model('user_sessions', userSessionSchema);
 
+
+var user_data = {}
+
+user_data.findById = function(user_id, callbackfunction){
+    User.findOne({"user_id": senderID}).exec(callbackfunction);
+}
+
 // ------------- END MODEL ---------------
 
 const
@@ -198,6 +205,12 @@ app.post('/webhook', function (req, res) {
               });
             }
         });
+
+        var usuario = user_data.findById(messagingEvent.sender.id, function(err, doc){
+            return doc;
+        });
+
+        console.log("DEBUG: USUARIO: "+ usuario.first_name);
 
         // cria novo registro de sessão
         console.log("DEBUG: cria registro na sessão");
@@ -538,6 +551,8 @@ function enviarMensagem(senderID, messagejson, message, index){
     enviaMesmoAMensagem(senderID, messagejson, index, timeout);
   }
 }
+
+
 
 function enviaMensagemComNome(senderID, messagejson, index, timeout){
 
