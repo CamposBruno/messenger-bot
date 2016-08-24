@@ -525,9 +525,7 @@ function enviarMensagem(senderID, messagejson, message, index){
     last_payload : message.next_reference
   });
 
-  newUserSession.save(function(err, doc){
-    if(err) throw err;
-  });
+  newUserSession.save();
 
 
   if(sjson.match(/\(USER\)/g)){
@@ -549,12 +547,16 @@ function enviarMensagem(senderID, messagejson, message, index){
 
   }else{
     console.log("não achou (USER) na msg");
-    setTimeout(function(){
-      sendTypingOn(senderID);
-      sendTypingOff(senderID);
-      callSendAPI(messagejson);
-    }, (index + 1 ) * timeout);
+    enviaMesmoAMensagem(senderID, messagejson, index, timeout);
   }
+}
+
+function enviaMesmoAMensagem(senderID, messagejson, index, timeout){
+  setTimeout(function(){
+    sendTypingOn(senderID);
+    sendTypingOff(senderID);
+    callSendAPI(messagejson);
+  }, (index + 1 ) * timeout);
 }
 
 /*

@@ -5,11 +5,6 @@ curl -X POST -H "Content-Type: application/json" -d '{
   "thread_state" : "existing_thread",
   "call_to_actions":[
     {
-      "type":"postback",
-      "title":"Get started",
-      "payload":"START_BOT"
-    },
-    {
       "type":"web_url",
       "title":"Mapa Wi-fi aberto",
       "url":"http://wifilivre.sp.gov.br/"
@@ -18,11 +13,6 @@ curl -X POST -H "Content-Type: application/json" -d '{
       "type":"web_url",
       "title":"Bora pro corre",
       "url":"http://google.com/?s=bora+pro+corre"
-    },
-    {
-      "type":"postback",
-      "title":"Deco, vou ali",
-      "payload":"PAUSE"
     }
 
   ]
