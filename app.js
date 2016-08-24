@@ -1072,7 +1072,7 @@ user_data.findById = function(user_id, callback){
   User.find({"user_id" : user_id}, callback);
 }
 
-userdata.findIdleUser = function(callback){
+user_data.findIdleUser = function(callback){
 
   UserSession.aggregate([
         // Sorting pipeline
