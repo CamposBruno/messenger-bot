@@ -531,28 +531,34 @@ function enviarMensagem(senderID, messagejson, message, index){
   if(sjson.match(/\(USER\)/g)){
     console.log("tem (USER) na mensagem");
 
-    User.findOne({"user_id": senderID}).exec(function(err, user){
-      sjson = sjson.replace(/\(USER\)/g, user.first_name);
-      messagejson = JSON.parse(sjson);
-
-      console.log("DEBUG: user : " + user.first_name);
-
-      setTimeout(function(){
-        sendTypingOn(senderID);
-        sendTypingOff(senderID);
-        callSendAPI(messagejson);
-      }, (index + 1 ) * timeout);
-
-    });
+    enviaMensagemComNome(senderID, messagejson, index, timeout);
 
   }else{
     console.log("não achou (USER) na msg");
-    setTimeout(function(){
-      sendTypingOn(senderID);
-      sendTypingOff(senderID);
-      callSendAPI(messagejson);
-    }, (index + 1 ) * timeout);
+    enviaMesmoAMensagem(senderID, messagejson, index, timeout);
   }
+}
+
+function enviaMensagemComNome(senderID, messagejson, index, timeout){
+
+  User.findOne({"user_id": senderID}).exec(function(err, user){
+    var sjson = JSON.stringify(messagejson);
+    sjson = sjson.replace(/\(USER\)/g, user.first_name);
+    messagejson = JSON.parse(sjson);
+
+    console.log("DEBUG: user : " + user.first_name);
+
+    enviaMesmoAMensagem(senderID, messagejson, index, timeout);
+
+  });
+}
+
+function enviaMesmoAMensagem(senderID, messagejson, index, timeout){
+  setTimeout(function(){
+    sendTypingOn(senderID);
+    sendTypingOff(senderID);
+    callSendAPI(messagejson);
+  }, (index + 1 ) * timeout);
 }
 
 /*
@@ -1057,6 +1063,72 @@ app.post('/insert_message', function(req, res) {
 
 
 });
+
+
+
+///IDLES
+var user_data = {};
+user_data.findById = function(user_id, callback){
+  User.find({"user_id" : user_id}, callback);
+}
+
+userdata.findIdleUser = function(callback){
+
+  UserSession.aggregate([
+        // Sorting pipeline
+        {
+            "$sort": {
+                "createdAt": -1
+            }
+        },
+        // Grouping pipeline
+        {
+            "$group": {
+                "_id": { "sender_id" : "$sender_id"},
+
+                "createdAt": {
+                    "$first": "$createdAt"
+                },
+                "last_payload" : {
+                  	"$first" : "$last_payload",
+
+                }
+            }
+        }
+    ]).exec(callback);
+}
+
+
+var cron = require('node-cron');
+
+cron.schedule('*/2 * * * *', function(){
+  console.log('CRON: running a task every two minutes');
+  // usuarios inativos por 10 min
+  /*userdata.findIdleUser(function(err, sessions){
+    var newDateObj = new Date(Date.now() - minutes*60000);
+    if(sessions && sessions.length){
+      console.log("DEBUG: achou usuarios idle : "+ sessions.length);
+      sessions.forEach(function(session, index){
+        if(session.createdAt > newDateObj){
+          if(session.last_payload  != "VOTE_BOM" ||
+           session.last_payload  != "VOTE_NORMAL" ||
+           session.last_payload  != "VOTE_RUIM"){
+             console.log("DEBUG: ENVIA MSG PARA "+ session.user_id + " PAYLOAD : "+ session.last_payload);
+           }
+        }
+      });
+    }
+  });*/
+
+});
+
+
+
+
+
+
+
+
 
 
 module.exports = app;
