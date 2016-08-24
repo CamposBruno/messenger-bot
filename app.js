@@ -1104,7 +1104,7 @@ var cron = require('node-cron');
 cron.schedule('*/2 * * * *', function(){
   console.log('CRON: running a task every two minutes');
   // usuarios inativos por 10 min
-  userdata.findIdleUser(function(err, sessions){
+  user_data.findIdleUser(function(err, sessions){
     var newDateObj = new Date(Date.now() - minutes*60000);
     if(sessions && sessions.length){
       console.log("DEBUG: achou usuarios idle : "+ sessions.length);
