@@ -531,24 +531,26 @@ function enviarMensagem(senderID, messagejson, message, index){
   if(sjson.match(/\(USER\)/g)){
     console.log("tem (USER) na mensagem");
 
-    User.findOne({"user_id": senderID}).exec(function(err, user){
-      sjson = sjson.replace(/\(USER\)/g, user.first_name);
-      messagejson = JSON.parse(sjson);
-
-      console.log("DEBUG: user : " + user.first_name);
-
-      setTimeout(function(){
-        sendTypingOn(senderID);
-        sendTypingOff(senderID);
-        callSendAPI(messagejson);
-      }, (index + 1 ) * timeout);
-
-    });
+    enviaMensagemComNome(senderID, messagejson, index, timeout);
 
   }else{
     console.log("não achou (USER) na msg");
     enviaMesmoAMensagem(senderID, messagejson, index, timeout);
   }
+}
+
+function enviaMensagemComNome(senderID, messagejson, index, timeout){
+
+  User.findOne({"user_id": senderID}).exec(function(err, user){
+    var sjson = JSON.stringify(messagejson);
+    sjson = sjson.replace(/\(USER\)/g, user.first_name);
+    messagejson = JSON.parse(sjson);
+
+    console.log("DEBUG: user : " + user.first_name);
+
+    enviaMesmoAMensagem(senderID, messagejson, index, timeout);
+
+  });
 }
 
 function enviaMesmoAMensagem(senderID, messagejson, index, timeout){
