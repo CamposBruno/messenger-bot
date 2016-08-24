@@ -70,7 +70,7 @@ var UserSession = mongoose.model('user_sessions', userSessionSchema);
 var user_data = {}
 
 user_data.findById = function(user_id, callbackfunction){
-    User.findOne({"user_id": senderID}).exec(callbackfunction);
+    User.findOne({"user_id": user_id}).exec(callbackfunction);
 }
 
 // ------------- END MODEL ---------------
