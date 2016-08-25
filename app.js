@@ -242,13 +242,13 @@ app.post('/webhook', function (req, res) {
                // se usuario pausou
                if(payload == "PROGRESS"){
                  console.log("DEBUG: payload PROGRESS");
-                  UserSession.find({"sender_id" : messagingEvent.sender.id}).sort({"createdAt" : -1}).limit(2).exec(function(err, usersession){
+                  UserSession.findOne({"sender_id" : messagingEvent.sender.id}, "last_payload" : {$nin: ["PROGRESS"]}).sort({"createdAt" : -1}).limit(1).exec(function(err, usersession){
                     if(err) throw err;
 
-                    console.log("DEBUG: achou registro de sessão do usuario", usersession);
-                    if(usersession && usersession.length > 1){
+                    console.log("DEBUG: achou registro de sessão do usuario");
+                    if(usersession){
                       console.log("entrou");
-                      var splits = usersession[1].last_payload.split("_");
+                      var splits = usersession.last_payload.split("_");
                       var level = 0;
                       var progress;
                       var body;
@@ -277,7 +277,7 @@ app.post('/webhook', function (req, res) {
 
                       var messagejson = {
                         recipient: {
-                          id: usersession[1].sender_id
+                          id: usersession.sender_id
                         },
                         message: JSON.parse(body)
                       };
