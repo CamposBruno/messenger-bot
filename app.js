@@ -1162,7 +1162,7 @@ function buscaMsgIdleEnvia(where, set, idle){
   console.log("buscaMsgIdleEnvia");
   UserSession.findOneAndUpdate(where, set, {upsert: true}, function(err, doc){
     console.log("DEBUG: dentro : "+ idle);
-    Idles.find({"reference" : "START_BOT"}).exec(function(err, messages){
+    Idles.find({"reference" : doc.last_payload}).exec(function(err, messages){
       if(err) throw err;
 
       if(messages && messages.length){
