@@ -241,7 +241,7 @@ app.post('/webhook', function (req, res) {
                console.log("DEBUG: não achou nenhuma mensagem com payload: " + payload);
                // se usuario pausou
                if(payload == "PROGRESS"){
-                 console.log("DEBUG: payload PROGRESS"); 
+                 console.log("DEBUG: payload PROGRESS");  
                   UserSession.findOne({"sender_id" : messagingEvent.sender.id, "last_payload" : {$nin: ["PROGRESS", "HELP"]}}).sort({"createdAt" : -1}).limit(1).exec(function(err, usersession){
                     if(err) throw err;
 
