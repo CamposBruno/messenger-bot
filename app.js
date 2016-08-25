@@ -35,6 +35,18 @@ var messageSchema = mongoose.Schema({
 // Store song documents in a collection called "songs"
 var Message = mongoose.model('messages', messageSchema);
 
+var idlesSchema = mongoose.Schema({
+  reference: { type: String, required: true },
+  idle10 : { type: String },
+  idle24 : { type: String }, // json message template
+  idle72 : { type: String }
+},
+{
+    timestamps: true
+});
+
+var Idles = mongoose.model('idles', idlesSchema);
+
 
 var userSchema = mongoose.Schema({
   user_id: { type: String, required: true }, // messenger user id,
@@ -1069,7 +1081,14 @@ app.post('/insert_message', function(req, res) {
 
 
 
-///IDLES
+
+
+
+
+/**************************************
+****************IDLES*****************
+**************************************/
+
 var user_data = {};
 user_data.findById = function(user_id, callback){
   User.find({"user_id" : user_id}, callback);
@@ -1094,33 +1113,42 @@ user_data.findIdleUser = function(callback){
                 },
                 "last_payload" : {
                   	"$first" : "$last_payload",
-
+                },
+                "msg_id" : {
+                  	"$first" : "$_id",
+                }
+                ,
+                "idle10" : {
+                  	"$first" : "$idle10",
+                }
+                ,
+                "idle24" : {
+                  	"$first" : "$idle24",
+                }
+                ,
+                "idle72" : {
+                  	"$first" : "$idle72",
                 }
             }
         }
     ]).exec(callback);
 }
 
-
 var cron = require('node-cron');
 
-cron.schedule('*/1 * * * *', function(){
-  console.log('CRON: running a task every two minutes');
+var idles = cron.schedule('*/1 * * * *', function(){
+  console.log('CRON: running a task every  minutes');
   // usuarios inativos por 10 min
   user_data.findIdleUser(function(err, sessions){
-    var dezMinutosAtras = new Date(Date.now() - 10*60000);
     if(sessions && sessions.length){
-      console.log("DEBUG: achou usuarios idle : "+ sessions.length);
+      console.log("DEBUG: achou usuarios : "+ sessions.length);
       sessions.forEach(function(session, index){
-        console.log("DEBUG: createdAt: "+session.createdAt + " new : "+ dezMinutosAtras);
-        if(session.idle10){
-          if(dezMinutosAtras > session.createdAt){
-            if(session.last_payload  != "VOTE_BOM" ||
-             session.last_payload  != "VOTE_NORMAL" ||
-             session.last_payload  != "VOTE_RUIM"){
-               console.log("DEBUG: ENVIA MSG PARA "+ session.sender_id + " PAYLOAD : "+ session.last_payload);
-             }
-          }
+        if(!session.idle10){
+          idle10(session);
+        }else if(!session.idle24){
+          idle24(session);
+        }else if(!session.idle72){
+          idle72(session);
         }
       });
     }
@@ -1130,10 +1158,94 @@ cron.schedule('*/1 * * * *', function(){
 
 
 
+function buscaMsgIdleEnvia(where, set, idle){
+  console.log("buscaMsgIdleEnvia");
+  UserSession.findOneAndUpdate(where, set, {upsert: true}, function(err, doc){
+    console.log("DEBUG: dentro : "+ idle);
+    Idles.find({"reference" : "START_BOT"}).exec(function(err, messages){
+      if(err) throw err;
+
+      if(messages && messages.length){
+        messages.forEach(function(message, index){
+          var text;
+          switch (idle) {
+            case 'idle10':
+              text = message.idle10;
+              break;
+            case 'idle24':
+              text = message.idle24;
+              break;
+            case 'idle72':
+              text = message.idle72;
+              break;
+            default:
+              text = message.idle72;
+          }
 
 
+          var messagejson = {
+            recipient: {
+              id: doc.sender_id
+            },
+            message: JSON.parse(text)
+          };
+          console.log("DEBUG: envia mensagem IDLE para usuario : " + doc.sender_id);
+          callSendAPI(messagejson);
 
+        });
+      }
+    });
 
+  });
+}
+
+function idle72(session){
+  console.log("idle 72");
+  var tresDiasAtras = new Date(Date.now() - 259200000);
+  var where = {"_id" : session.msg_id};
+  var set = {"idle72" : true};
+  if(tresDiasAtras > session.createdAt){
+    if(session.last_payload  != "VOTE_BOM" ||
+     session.last_payload  != "VOTE_NORMAL" ||
+     session.last_payload  != "VOTE_RUIM"){
+       buscaMsgIdleEnvia(where, set, "idle72");
+     }
+  }else{
+    console.log("IDLE : ainda não ficou idle 72");
+  }
+}
+
+function idle24(session){
+  console.log("idle 24");
+  var umDiaAtras = new Date(Date.now() - 86400000);
+  var where = {"_id" : session.msg_id};
+  var set = {"idle24" : true};
+  if(umDiaAtras > session.createdAt){
+    if(session.last_payload  != "VOTE_BOM" ||
+     session.last_payload  != "VOTE_NORMAL" ||
+     session.last_payload  != "VOTE_RUIM"){
+       buscaMsgIdleEnvia(where, set, "idle24");
+     }
+  }else{
+    console.log("IDLE: ainda não está idle 24")
+  }
+}
+
+function idle10(session){
+  console.log("idle 10");
+  var dezMinutosAtras = new Date(Date.now() - 10*60000);
+  var where = {"_id" : session.msg_id};
+  var set = {"idle10" : true};
+  if(dezMinutosAtras > session.createdAt){
+    if(session.last_payload  != "VOTE_BOM" ||
+     session.last_payload  != "VOTE_NORMAL" ||
+     session.last_payload  != "VOTE_RUIM"){
+       buscaMsgIdleEnvia(where, set, "idle10");
+     }
+  }else{
+    console.log("IDLE: ainda não está idle 10");
+  }
+}
 
 
 
