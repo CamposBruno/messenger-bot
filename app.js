@@ -243,6 +243,8 @@ app.post('/webhook', function (req, res) {
                if(payload == "PROGRESS"){
                  console.log("DEBUG: payload PROGRESS");
                   UserSession.findOne({"sender_id" : messagingEvent.sender.id}).sort({"createdAt" : -1}).limit(1).exec(function(err, usersession){
+                    if(err) throw err;
+
                     console.log("DEBUG: achou registro de sessão do usuario", usersession.length);
                     if(usersession && usersession.length > 0){
                       console.log("entrou");
