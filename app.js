@@ -240,31 +240,46 @@ app.post('/webhook', function (req, res) {
              if(!docs.length){
                console.log("DEBUG: não achou nenhuma mensagem com payload: " + payload);
                // se usuario pausou
-               if(payload == "RESTART"){
-                 console.log("DEBUG: payload RESTART");
-                  UserSession.find({"receiver_id" : messagingEvent.sender.id}).sort({"createdAt" : -1}).limit(2).exec(function(err, usersession){
-                    console.log("DEBUG: busca registro de sessão pelas duas ultimas mensagens enviadas para o usuario. achou : " + usersession.length);
-                    if(usersession.length > 1){
+               if(payload == "PROGRESS"){
+                 console.log("DEBUG: payload PROGRESS");
+                  UserSession.findOne({"sender_id" : messagingEvent.sender.id}).sort({"createdAt" : -1}).limit(1).exec(function(err, usersession){
 
-                      //busca mensagem de erro comparando o ultimo payload enviado e mensagem que é mismatch
-                      Message.find({"reference" : usersession[1].last_payload , "mismatch" : false}).sort({"order": 1}).exec(function(err, messages){
-                        console.log("DEBUG: busca mensagens do ultimo nivel que usuario estava antes de pausar. achou: " + messages.length);
+                    if(usersession && usersession.length > 0){
+                      var splits = usersession.last_payload.split("_");
+                      var level = 0;
+                      var progress;
+                      var body;
+                      switch (splits[0]) {
+                        case "START":
+                          level = 1;
+                          break;
+                        case "LEVEL":
+                          level = parseInt(splits[1])
+                          break;
+                        default:
+                        level = 10;
+                          console.log("ja completou");
 
-                        if(messages.length){
-                          messages.forEach(function (message, index) {
-                            var messagejson = {
-                              recipient: {
-                                id: messagingEvent.sender.id
-                              },
-                              message: JSON.parse(message["body"])
-                            };
-                            console.log("DEBUG: envia mensagem para usuario");
-                            enviarMensagem(messagingEvent.sender.id, messagejson, message, index);
-                          });
+                      }
 
-                        }
+                      progress =  10 - level;
 
-                      });
+                      if(progress > 0){
+                        body = '{"text": "Te falta(m) '+ progress +' video(s) para terminar! #vamoquevamo", "metadata": "DEVELOPER_DEFINED_METADATA"}';
+                      }else{
+                        body = '{"text": "Você já assistiu todos os videos! :D", "metadata": "DEVELOPER_DEFINED_METADATA"}'
+                      }
+
+                      var messagejson = {
+                        recipient: {
+                          id: messagingEvent.sender.id
+                        },
+                        message: JSON.parse(body)
+                      };
+                      console.log("DEBUG: envia PROGRESS para usuario");
+                      callSendAPI(messagejson);
+
+
                     }
 
                   });
