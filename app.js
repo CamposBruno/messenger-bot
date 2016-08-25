@@ -243,8 +243,9 @@ app.post('/webhook', function (req, res) {
                if(payload == "PROGRESS"){
                  console.log("DEBUG: payload PROGRESS");
                   UserSession.findOne({"sender_id" : messagingEvent.sender.id}).sort({"createdAt" : -1}).limit(1).exec(function(err, usersession){
-
+                    console.log("DEBUG: achou registro de sessão do usuario", usersession.length);
                     if(usersession && usersession.length > 0){
+                      console.log("entrou");
                       var splits = usersession.last_payload.split("_");
                       var level = 0;
                       var progress;
@@ -264,6 +265,8 @@ app.post('/webhook', function (req, res) {
 
                       progress =  10 - level;
 
+                      console.log("PROGRESS", progress);
+
                       if(progress > 0){
                         body = '{"text": "Te falta(m) '+ progress +' video(s) para terminar! #vamoquevamo", "metadata": "DEVELOPER_DEFINED_METADATA"}';
                       }else{
@@ -272,7 +275,7 @@ app.post('/webhook', function (req, res) {
 
                       var messagejson = {
                         recipient: {
-                          id: messagingEvent.sender.id
+                          id: usersession.sender_id
                         },
                         message: JSON.parse(body)
                       };

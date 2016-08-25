@@ -10,6 +10,12 @@ curl -X POST -H "Content-Type: application/json" -d '{
       "url":"http://wifilivre.sp.gov.br/"
     },
     {
+      "type":"postback",
+      "title":"Progresso",
+      "payload":"PROGRESS"
+    },
+
+    {
       "type":"web_url",
       "title":"Bora pro corre",
       "url":"http://google.com/?s=bora+pro+corre"
