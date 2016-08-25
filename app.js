@@ -57,7 +57,10 @@ var userSessionSchema = mongoose.Schema({
   sender_id : { type: String, required: true },
   receiver_id : { type: String, required: true }, // nivel do menu que usuario está
   body : { type: String },
-  last_payload : { type: String } // ultima opção que usuario enviou
+  last_payload : { type: String }, // ultima opção que usuario enviou
+  idle10 : {type: Boolean, default: false},
+  idle24 : {type: Boolean, default: false},
+  idle72 : {type: Boolean, default: false}
 
 },
 {
@@ -1101,24 +1104,27 @@ user_data.findIdleUser = function(callback){
 
 var cron = require('node-cron');
 
-cron.schedule('*/2 * * * *', function(){
+cron.schedule('*/1 * * * *', function(){
   console.log('CRON: running a task every two minutes');
   // usuarios inativos por 10 min
-  /*userdata.findIdleUser(function(err, sessions){
-    var newDateObj = new Date(Date.now() - minutes*60000);
+  user_data.findIdleUser(function(err, sessions){
+    var dezMinutosAtras = new Date(Date.now() - 10*60000);
     if(sessions && sessions.length){
       console.log("DEBUG: achou usuarios idle : "+ sessions.length);
       sessions.forEach(function(session, index){
-        if(session.createdAt > newDateObj){
-          if(session.last_payload  != "VOTE_BOM" ||
-           session.last_payload  != "VOTE_NORMAL" ||
-           session.last_payload  != "VOTE_RUIM"){
-             console.log("DEBUG: ENVIA MSG PARA "+ session.user_id + " PAYLOAD : "+ session.last_payload);
-           }
+        console.log("DEBUG: createdAt: "+session.createdAt + " new : "+ dezMinutosAtras);
+        if(session.idle10){
+          if(dezMinutosAtras > session.createdAt){
+            if(session.last_payload  != "VOTE_BOM" ||
+             session.last_payload  != "VOTE_NORMAL" ||
+             session.last_payload  != "VOTE_RUIM"){
+               console.log("DEBUG: ENVIA MSG PARA "+ session.sender_id + " PAYLOAD : "+ session.last_payload);
+             }
+          }
         }
       });
     }
-  });*/
+  });
 
 });
 
