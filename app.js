@@ -248,15 +248,25 @@ app.post('/webhook', function (req, res) {
                     console.log("DEBUG: achou registro de sessão do usuario");
                     if(usersession){
                       console.log("entrou");
-                      var splits = usersession.last_payload.split("_");
+                      //var splits = usersession.last_payload.split("_");
                       var level = 0;
                       var progress;
                       var body;
-                      switch (splits[0]) {
-                        case "START":
+                      switch (usersession.last_payload) {
+                        case "START_BOT":
                           level = 1;
                           break;
-                        case "LEVEL":
+                        case "LEVEL_1":
+                        case "LEVEL_2":
+                        case "LEVEL_3":
+                        case "LEVEL_4":
+                        case "LEVEL_5":
+                        case "LEVEL_6":
+                        case "LEVEL_7":
+                        case "LEVEL_8":
+                        case "LEVEL_9":
+                        case "LEVEL_10":
+                          var splits = usersession.last_payload.split("_");
                           level = parseInt(splits[1])
                           break;
                         default:
@@ -1268,5 +1278,5 @@ function idle10(session){
 }
 
 
- 
+
 module.exports = app;
