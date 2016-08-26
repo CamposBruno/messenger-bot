@@ -1129,6 +1129,12 @@ user_data.findIdleUser = function(callback){
   UserSession.aggregate([
         // Sorting pipeline
         {
+
+            "$match": {
+                "last_payload": {"$nin" : [null, 'HELP', 'PROGRESS']}
+            }
+        },
+        {
             "$sort": {
                 "createdAt": -1
             }
