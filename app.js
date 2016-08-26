@@ -245,9 +245,9 @@ app.post('/webhook', function (req, res) {
                   UserSession.findOne({"sender_id" : messagingEvent.sender.id, "last_payload" : {$nin: ["PROGRESS", "HELP"]}}).sort({"createdAt" : -1}).limit(1).exec(function(err, usersession){
                     if(err) throw err;
 
-                    console.log("DEBUG: achou registro de sessão do usuario");
+                    console.log("DEBUG: achou registro de sessão do usuario, LAST PAYLOAD "+ );
                     if(usersession){
-                      console.log("entrou");
+                      console.log("DEBUG: entrou LAST_PAYLOAD " + usersession.last_payload);
                       //var splits = usersession.last_payload.split("_");
                       var level = 0;
                       var progress;
