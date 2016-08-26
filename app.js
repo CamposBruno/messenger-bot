@@ -242,7 +242,7 @@ app.post('/webhook', function (req, res) {
                // se usuario pausou
                if(payload == "PROGRESS"){
                  console.log("DEBUG: payload PROGRESS");
-                  UserSession.findOne({"sender_id" : messagingEvent.sender.id, "last_payload" : {$nin: ["PROGRESS", "HELP"]}}).sort({"createdAt" : -1}).limit(1).exec(function(err, usersession){
+                  UserSession.findOne({"sender_id" : messagingEvent.sender.id, "last_payload" : {$nin: ["PROGRESS", "HELP", null]}}).sort({"createdAt" : -1}).limit(1).exec(function(err, usersession){
                     if(err) throw err;
 
                     console.log("DEBUG: achou registro de sessão do usuario, LAST PAYLOAD " );
