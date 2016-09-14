@@ -587,11 +587,19 @@ function enviarMensagem(senderID, messagejson, message, index){
 function enviaMensagemComNome(senderID, messagejson, index, timeout){
 
   User.findOne({"user_id": senderID}).exec(function(err, user){
+
+    if(err) console.log("ERRO: ", err);
+
     var sjson = JSON.stringify(messagejson);
-    sjson = sjson.replace(/\(USER\)/g, user.first_name);
+
+    if(user){
+      sjson = sjson.replace(/\(USER\)/g, user.first_name);
+      console.log("DEBUG: user : " + user.first_name);
+    }
+
     messagejson = JSON.parse(sjson);
 
-    console.log("DEBUG: user : " + user.first_name);
+
 
     enviaMesmoAMensagem(senderID, messagejson, index, timeout);
 
