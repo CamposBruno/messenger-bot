@@ -22,7 +22,6 @@ mongoose.connect(mongodbUri);
 
 var messageSchema = mongoose.Schema({
   reference: { type: String, required: true },
-  next_reference : {type: String},
   body : { type: String, required: true }, // json message template
   order: { type: Number },
   mismatch : {type: Boolean},
@@ -567,7 +566,7 @@ function enviarMensagem(senderID, messagejson, message, index){
     sender_id : "ROBOT",
     receiver_id : senderID,
     body : JSON.stringify(messagejson),
-    last_payload : message.next_reference
+    last_payload : message.reference
   });
 
   newUserSession.save();
