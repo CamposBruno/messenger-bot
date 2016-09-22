@@ -203,7 +203,7 @@ app.post('/webhook', function (req, res) {
                 gender: fbUser.gender
               });
 
-              User.update(where, {$setOnInsert: newUser}, {$upsert: true}, handleHaveUser);
+              User.update(where, {$setOnInsert: currentUser}, {$upsert: true}, handleHaveUser);
 
             }else{
               //TODO: throw ERROR AND CATCH IT
