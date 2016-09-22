@@ -54,7 +54,8 @@ var userSchema = mongoose.Schema({
   profile_pic : { type: String },
   locale: { type: String },
   timezone: { type: String },
-  gender: { type: String }
+  gender: { type: String },
+  progress : {type: Number}
 
 },
 {
@@ -200,7 +201,8 @@ app.post('/webhook', function (req, res) {
                 profile_pic : fbUser.profile_pic,
                 locale: fbUser.locale,
                 timezone: fbUser.timezone,
-                gender: fbUser.gender
+                gender: fbUser.gender,
+                progress : getProgress(payload)
               });
 
               User.update(where, {$setOnInsert: currentUser}, {$upsert: true}, function(err, numAffected){
@@ -213,7 +215,43 @@ app.post('/webhook', function (req, res) {
         });
 
 
+        function getProgress(payload){
+          switch (payload) {
+            case 'START_BOT':
+              return 10;
+              break;
+            case 'LEVEL_2':
+                return 9;
+                break;
+            case 'LEVEL_3':
+                return 8;
+                break;
+                case 'LEVEL_4':
+                    return 7;
+                    break;
+                    case 'LEVEL_5':
+                        return 6;
+                        break;
+                        case 'LEVEL_6':
+                            return 5;
+                            break;
+                            case 'LEVEL_7':
+                                return 4;
+                                break;
+                                case 'LEVEL_8':
+                                    return 3;
+                                    break;
+                                    case 'LEVEL_9':
+                                        return 2;
+                                        break;
+                                        case 'LEVEL_10':
+                                            return 1;
+                                            break;
+            default:
+              return 0;
 
+          }
+        }
 
         function handleHaveUser(err, numAffected, currentUser){
           // cria novo registro de sessão
@@ -502,6 +540,12 @@ function enviarMensagem(currentUser, messagejson, message, index){
       console.log("tem (USER) na mensagem");
       sjson = sjson.replace(/\(USER\)/g, currentUser.first_name);
       console.log("DEBUG: user : " + currentUser.first_name);
+    }
+
+    if(sjson.match(/\(PROGRESS\)/g)){
+      console.log("tem (PROGRESS) na mensagem");
+      sjson = sjson.replace(/\(PROGRESS\)/g, currentUser.progress);
+      console.log("DEBUG: progress : " + currentUser.progress);
     }
 
     enviaMesmoAMensagem(currentUser, JSON.parse(sjson), index, timeout);
