@@ -504,7 +504,7 @@ function enviarMensagem(currentUser, messagejson, message, index){
       console.log("DEBUG: user : " + currentUser.first_name);
     }
 
-    enviaMesmoAMensagem(currentUser, messagejson, index, timeout);
+    enviaMesmoAMensagem(currentUser, JSON.parse(sjson), index, timeout);
 
 
   });
