@@ -490,7 +490,7 @@ function enviarMensagem(currentUser, messagejson, message, index){
 
   var newUserSession = new UserSession({
     sender_id : "ROBOT",
-    receiver_id : senderID,
+    receiver_id : currentUser.user_id,
     body : JSON.stringify(messagejson),
     last_payload : message.reference
   });
