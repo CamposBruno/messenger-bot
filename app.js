@@ -203,7 +203,9 @@ app.post('/webhook', function (req, res) {
                 gender: fbUser.gender
               });
 
-              User.update(where, {$setOnInsert: currentUser}, {$upsert: true}, handleHaveUser);
+              User.update(where, {$setOnInsert: currentUser}, {$upsert: true}, function(err, numAffected){
+                handleHaveUser(err, numAffected, currentUser)
+              });
 
             }else{
               //TODO: throw ERROR AND CATCH IT
@@ -213,57 +215,61 @@ app.post('/webhook', function (req, res) {
 
 
 
-        function handleHaveUser(err, numAffected){
+        function handleHaveUser(err, numAffected, currentUser){
           // cria novo registro de sessão
           console.log("DEBUG: cria registro na sessão");
           var newUserSession = new UserSession({
-            sender_id : messagingEvent.sender.id,
+            sender_id : currentUser.user_id,
             receiver_id : messagingEvent.recipient.id,
             body : JSON.stringify(messagingEvent.message),
             last_payload: payload
           });
 
-          newUserSession.save(handlehaveSession);
+          newUserSession.save(function(err, doc){
+            handlehaveSession(err, doc, currentUser);
+          });
 
         }
 
-        function handlehaveSession(err, doc){
+        function handlehaveSession(err, doc, currentUser){
           if(err) throw err //TODO:CATCH IT
 
           Message
           .find({"reference" : payload, "mismatch" : false})
           .sort({"order": 1})
-          .exec(handleFindMessageToSend);
+          .exec(function(err, docs){
+            handleFindMessageToSend(err, docs, currentUser)
+          });
         }
 
-        function handleFindMessageToSend(err, docs){
+        function handleFindMessageToSend(err, docs, currentUser){
           if(err) throw err;
           console.log("DEBUG: busca mensagens com payload enviado. achou: " + docs.length);
 
           if(docs.length)
-            prepareMessageToSend(docs);
+            prepareMessageToSend(docs, currentUser);
           else
-            prepareErrorMessageToSend();
+            prepareErrorMessageToSend(currentUser);
 
         }
 
-        function prepareMessageToSend(docs){
+        function prepareMessageToSend(docs, currentUser){
           console.log("DEBUG: envia as mensagens cadastradas para o payload. total: " + docs.length);
           // envia todas para usuario
           docs.forEach(function (doc, index) {
             var messagejson = {
               recipient: {
-                id: messagingEvent.sender.id
+                id: currentUser.user_id
               },
               message: JSON.parse(doc["body"])
             };
 
-            enviarMensagem(messagingEvent.sender.id, messagejson, doc, index);
+            enviarMensagem(currentUser, messagejson, doc, index);
 
           });
         }
 
-        function prepareErrorMessageToSend(){
+        function prepareErrorMessageToSend(currentUser){
           UserSession.find({"receiver_id" : messagingEvent.sender.id}).sort({"createdAt" : -1}).limit(1).exec(function(err, usersession){//TODO: adicionar sort createdAt -1
             console.log("DEBUG: busca registro de sessão pela ultima mensagem enviada para o usuario. achou : " + usersession.length);
             if(usersession.length){
@@ -275,12 +281,12 @@ app.post('/webhook', function (req, res) {
                   messages.forEach(function (message, index) {
                     var messagejson = {
                       recipient: {
-                        id: messagingEvent.sender.id
+                        id: currentUser.user_id
                       },
                       message: JSON.parse(message["body"])
                     };
                     console.log("DEBUG: envia mensagem para usuario");
-                    enviarMensagem(messagingEvent.sender.id, messagejson, message, index);
+                    enviarMensagem(currentUser, messagejson, message, index);
                   });
 
                 }
@@ -477,7 +483,7 @@ function receivedPostback(event) {
 
 }
 
-function enviarMensagem(senderID, messagejson, message, index){
+function enviarMensagem(currentUser, messagejson, message, index){
 
   var timeout = message.tempo ? message.tempo : 3000;
   var sjson = JSON.stringify(messagejson);
@@ -496,9 +502,10 @@ function enviarMensagem(senderID, messagejson, message, index){
       console.log("tem (USER) na mensagem");
       sjson = sjson.replace(/\(USER\)/g, currentUser.first_name);
       console.log("DEBUG: user : " + currentUser.first_name);
-
-      enviaMesmoAMensagem(senderID, messagejson, index, timeout);
     }
+
+    enviaMesmoAMensagem(currentUser, messagejson, index, timeout);
+
 
   });
 
@@ -507,10 +514,10 @@ function enviarMensagem(senderID, messagejson, message, index){
 }
 
 
-function enviaMesmoAMensagem(senderID, messagejson, index, timeout){
+function enviaMesmoAMensagem(currentUser, messagejson, index, timeout){
   setTimeout(function(){
-    sendTypingOn(senderID);
-    sendTypingOff(senderID);
+    sendTypingOn(currentUser.user_id);
+    sendTypingOff(currentUser.user_id);
     callSendAPI(messagejson);
   }, (index + 1 ) * timeout);
 }
