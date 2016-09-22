@@ -163,6 +163,7 @@ app.post('/webhook', function (req, res) {
     data.entry.forEach(function(pageEntry) {
       var pageID = pageEntry.id;
       var timeOfEvent = pageEntry.time;
+      var currentUser = undefined;
 
       // Iterate over each messaging event
       pageEntry.messaging.forEach(function(messagingEvent) {
@@ -181,200 +182,119 @@ app.post('/webhook', function (req, res) {
           var payload = null;
         }
 
+        request({
+          uri: 'https://graph.facebook.com/v2.6/' + messagingEvent.sender.id,
+          method: 'GET',
+          qs: { access_token: PAGE_ACCESS_TOKEN , fields : 'first_name,last_name,profile_pic,locale,timezone,gender'}
 
-        // verifica se usuario existe
-        User.find({"user_id": messagingEvent.sender.id}).exec(function(err, users){
-          console.log("DEBUG: procura user com id : " + messagingEvent.sender.id + " achou "+ users.length);
-            //se usuario não existe busca info do facebook e cria usuario
-            if(!users.length && messagingEvent.sender.id != "228963060836739"){// 228963060836739 id do bot
-              console.log("DEBUG: faz facebook request");
-              request({
-                uri: 'https://graph.facebook.com/v2.6/' + messagingEvent.sender.id,
-                method: 'GET',
-                qs: { access_token: PAGE_ACCESS_TOKEN , fields : 'first_name,last_name,profile_pic,locale,timezone,gender'}
+        }, function(error, response, body){
+            console.log("DEBUG: respota do facebook "+ response.statusCode);
 
-              }, function(error, response, body){
-                  console.log("DEBUG: respota do facebook "+ response.statusCode);
+            if (!error && response.statusCode == 200) {
 
-                  if (!error && response.statusCode == 200) {
-                    var fbUser = JSON.parse(body);
-                    var newUser = new User({
-                      user_id: messagingEvent.sender.id,
-                      first_name: fbUser.first_name,
-                      last_name : fbUser.last_name,
-                      profile_pic : fbUser.profile_pic,
-                      locale: fbUser.locale,
-                      timezone: fbUser.timezone,
-                      gender: fbUser.gender
-                    });
-
-                    newUser.save();
-                  }
+              var where = {"user_id": messagingEvent.sender.id};
+              var fbUser = JSON.parse(body);
+              currentUser = new User({
+                user_id: messagingEvent.sender.id,
+                first_name: fbUser.first_name,
+                last_name : fbUser.last_name,
+                profile_pic : fbUser.profile_pic,
+                locale: fbUser.locale,
+                timezone: fbUser.timezone,
+                gender: fbUser.gender
               });
+
+              User.update(where, {$setOnInsert: newUser}, {$upsert: true}, handleHaveUser);
+
+            }else{
+              //TODO: throw ERROR AND CATCH IT
             }
         });
 
-        // cria novo registro de sessão
-        console.log("DEBUG: cria registro na sessão");
-        var newUserSession = new UserSession({
-          sender_id : messagingEvent.sender.id,
-          receiver_id : messagingEvent.recipient.id,
-          body : JSON.stringify(messagingEvent.message),
-          last_payload: payload
-        });
-
-        newUserSession.save(function(err, doc){
-          if(err){
-            console.error("DEBUG: ERRO AO SALVAR", err);
-            throw err;
-          }
-
-          Message.find({"reference" : payload, "mismatch" : false}).sort({"order": 1}).exec(function(err, docs){
-            console.log("DEBUG: busca mensagens com payload enviado. achou: " + docs.length);
-
-            //console.log("errors", err);
-
-             if(err) throw err;
-
-             // se não achou nenhuma mensagem com reference  = payload
-             if(!docs.length){
-               console.log("DEBUG: não achou nenhuma mensagem com payload: " + payload);
-               // se usuario pausou
-               if(payload == "PROGRESS"){
-                 console.log("DEBUG: payload PROGRESS");
-                  UserSession.findOne({"sender_id" : messagingEvent.sender.id, "last_payload" : {$nin: ["PROGRESS", "HELP", null]}}).sort({"createdAt" : -1}).limit(1).exec(function(err, usersession){
-                    if(err) throw err;
-
-                    console.log("DEBUG: achou registro de sessão do usuario, LAST PAYLOAD " );
-                    if(usersession){
-                      console.log("DEBUG: entrou LAST_PAYLOAD " + usersession.last_payload);
-                      //var splits = usersession.last_payload.split("_");
-                      var level = 0;
-                      var progress;
-                      var body;
-                      switch (usersession.last_payload) {
-                        case "START_BOT":
-                          level = 1;
-                          break;
-                        case "LEVEL_1":
-                        case "LEVEL_2":
-                        case "LEVEL_3":
-                        case "LEVEL_4":
-                        case "LEVEL_5":
-                        case "LEVEL_6":
-                        case "LEVEL_7":
-                        case "LEVEL_8":
-                        case "LEVEL_9":
-                        case "LEVEL_10":
-                          var splits = usersession.last_payload.split("_");
-                          level = parseInt(splits[1])
-                          break;
-                        default:
-                        level = 10;
-                          console.log("ja completou");
-
-                      }
-
-                      progress =  10 - level;
-
-                      console.log("PROGRESS", progress);
-
-                      if(progress > 0){
-                        body = '{"text": "Te falta(m) '+ progress +' video(s) para terminar! #vamoquevamo", "metadata": "DEVELOPER_DEFINED_METADATA"}';
-                      }else{
-                        body = '{"text": "Você já assistiu todos os videos! :D", "metadata": "DEVELOPER_DEFINED_METADATA"}'
-                      }
-
-                      var messagejson = {
-                        recipient: {
-                          id: usersession.sender_id
-                        },
-                        message: JSON.parse(body)
-                      };
-                      console.log("DEBUG: envia PROGRESS para usuario");
-                      callSendAPI(messagejson);
 
 
-                    }
 
+        function handleHaveUser(err, numAffected){
+          // cria novo registro de sessão
+          console.log("DEBUG: cria registro na sessão");
+          var newUserSession = new UserSession({
+            sender_id : messagingEvent.sender.id,
+            receiver_id : messagingEvent.recipient.id,
+            body : JSON.stringify(messagingEvent.message),
+            last_payload: payload
+          });
+
+          newUserSession.save(handlehaveSession);
+
+        }
+
+        function handlehaveSession(err, doc){
+          if(err) throw err //TODO:CATCH IT
+
+          Message
+          .find({"reference" : payload, "mismatch" : false})
+          .sort({"order": 1})
+          .exec(handleFindMessageToSend);
+        }
+
+        function handleFindMessageToSend(err, docs){
+          if(err) throw err;
+          console.log("DEBUG: busca mensagens com payload enviado. achou: " + docs.length);
+
+          if(docs.length)
+            prepareMessageToSend(docs);
+          else
+            prepareErrorMessageToSend();
+
+        }
+
+        function prepareMessageToSend(docs){
+          console.log("DEBUG: envia as mensagens cadastradas para o payload. total: " + docs.length);
+          // envia todas para usuario
+          docs.forEach(function (doc, index) {
+            var messagejson = {
+              recipient: {
+                id: messagingEvent.sender.id
+              },
+              message: JSON.parse(doc["body"])
+            };
+
+            enviarMensagem(messagingEvent.sender.id, messagejson, doc, index);
+
+          });
+        }
+
+        function prepareErrorMessageToSend(){
+          UserSession.find({"receiver_id" : messagingEvent.sender.id}).sort({"createdAt" : -1}).limit(1).exec(function(err, usersession){//TODO: adicionar sort createdAt -1
+            console.log("DEBUG: busca registro de sessão pela ultima mensagem enviada para o usuario. achou : " + usersession.length);
+            if(usersession.length){
+              //busca mensagem de erro comparando o ultimo payload enviado e mensagem que é mismatch
+              Message.find({"reference" : usersession[0].last_payload, "mismatch" : true}).sort({"order": 1}).exec(function(err, messages){
+                console.log("DEBUG: busca mensagem de erro resgitrada para aquele payload (" +usersession[0].last_payload+ ")  achou " + messages.length);
+                console.log("DEBUG: LAST PAYLOAD",  usersession[0].last_payload);
+                if(messages.length){
+                  messages.forEach(function (message, index) {
+                    var messagejson = {
+                      recipient: {
+                        id: messagingEvent.sender.id
+                      },
+                      message: JSON.parse(message["body"])
+                    };
+                    console.log("DEBUG: envia mensagem para usuario");
+                    enviarMensagem(messagingEvent.sender.id, messagejson, message, index);
                   });
 
-               }else{
-
-                 //busca nos registros de mensagem o ultimo payload que foi enviada pro usuario
-                 UserSession.find({"receiver_id" : messagingEvent.sender.id}).sort({"createdAt" : -1}).limit(1).exec(function(err, usersession){//TODO: adicionar sort createdAt -1
-                   console.log("DEBUG: busca registro de sessão pela ultima mensagem enviada para o usuario. achou : " + usersession.length);
-                   if(usersession.length){
-                     //busca mensagem de erro comparando o ultimo payload enviado e mensagem que é mismatch
-                     Message.find({"reference" : usersession[0].last_payload, "mismatch" : true}).sort({"order": 1}).exec(function(err, messages){
-                       console.log("DEBUG: busca mensagem de erro resgitrada para aquele payload (" +usersession[0].last_payload+ ")  achou " + messages.length);
-                       console.log("DEBUG: LAST PAYLOAD",  usersession[0].last_payload);
-                       if(messages.length){
-                         messages.forEach(function (message, index) {
-                           var messagejson = {
-                             recipient: {
-                               id: messagingEvent.sender.id
-                             },
-                             message: JSON.parse(message["body"])
-                           };
-                           console.log("DEBUG: envia mensagem para usuario");
-                           enviarMensagem(messagingEvent.sender.id, messagejson, message, index);
-                         });
-
-                       }
-                     });
-                   }
-
-                 });
-
-
-               }
-
-
-
-               // se achou mensagem
-             }else{
-               console.log("DEBUG: envia as mensagens cadastradas para o payload. total: " + docs.length);
-               // envia todas para usuario
-               docs.forEach(function (doc, index) {
-                 var messagejson = {
-                   recipient: {
-                     id: messagingEvent.sender.id
-                   },
-                   message: JSON.parse(doc["body"])
-                 };
-
-                 enviarMensagem(messagingEvent.sender.id, messagejson, doc, index);
-
-               });
-
-             }
+                }
+              });
+            }
 
           });
 
+        }
 
-
-
-        });
 
         // busca mensagens com raference  = payload que usuario enviou
 
-
-        /*if (messagingEvent.optin) {
-          receivedAuthentication(messagingEvent);
-        } else if (messagingEvent.message) {
-          receivedMessage(messagingEvent);
-        } else if (messagingEvent.delivery) {
-          receivedDeliveryConfirmation(messagingEvent);
-        } else if (messagingEvent.postback) {
-          receivedPostback(messagingEvent);
-        } else if (messagingEvent.read) {
-          receivedMessageRead(messagingEvent);
-        } else if (messagingEvent.account_linking) {
-          receivedAccountLink(messagingEvent);
-        } else {
-          console.log("Webhook received unknown messagingEvent: ", messagingEvent);
-        }*/
       }
       });
 
@@ -570,41 +490,23 @@ function enviarMensagem(senderID, messagejson, message, index){
     last_payload : message.next_reference
   });
 
-  newUserSession.save();
+  newUserSession.save(function(err){
+    if(err) throw err
 
+    if(sjson.match(/\(USER\)/g)){
+      console.log("tem (USER) na mensagem");
+      sjson = sjson.replace(/\(USER\)/g, currentUser.first_name);
+      console.log("DEBUG: user : " + currentUser.first_name);
 
-  if(sjson.match(/\(USER\)/g)){
-    console.log("tem (USER) na mensagem");
-
-    enviaMensagemComNome(senderID, messagejson, index, timeout);
-
-  }else{
-    console.log("não achou (USER) na msg");
-    enviaMesmoAMensagem(senderID, messagejson, index, timeout);
-  }
-}
-
-function enviaMensagemComNome(senderID, messagejson, index, timeout){
-
-  User.findOne({"user_id": senderID}).exec(function(err, user){
-
-    if(err) console.log("ERRO: ", err);
-
-    var sjson = JSON.stringify(messagejson);
-
-    if(user){
-      sjson = sjson.replace(/\(USER\)/g, user.first_name);
-      console.log("DEBUG: user : " + user.first_name);
+      enviaMesmoAMensagem(senderID, messagejson, index, timeout);
     }
 
-    messagejson = JSON.parse(sjson);
-
-
-
-    enviaMesmoAMensagem(senderID, messagejson, index, timeout);
-
   });
+
+
+
 }
+
 
 function enviaMesmoAMensagem(senderID, messagejson, index, timeout){
   setTimeout(function(){
@@ -1047,10 +949,7 @@ function sendAccountLinking(recipientId) {
   callSendAPI(messageData);
 }
 
-function getUser (userID){
 
-
-}
 
 /*
  * Call the Send API. The message data goes in the body. If successful, we'll
