@@ -201,9 +201,12 @@ app.post('/webhook', function (req, res) {
                 profile_pic : fbUser.profile_pic,
                 locale: fbUser.locale,
                 timezone: fbUser.timezone,
-                gender: fbUser.gender,
-                progress : getProgress(payload)
+                gender: fbUser.gender
               });
+
+              if(payload != "PROGRESS" && payload != "HELP"){
+                currentUser.progress = getProgress(payload);
+              }
 
               User.update(where, {$setOnInsert: currentUser}, {$upsert: true}, function(err, numAffected){
                 handleHaveUser(err, numAffected, currentUser)
