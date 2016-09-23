@@ -1183,7 +1183,7 @@ function buscaMsgIdleEnvia(where, set, idle){
   console.log("buscaMsgIdleEnvia");
   UserSession.findOneAndUpdate(where, set, {upsert: true}, function(err, doc){
 
-    User.findOne({"user_id", doc.sender_id}, function(err, currentUser){
+    User.findOne({"user_id": doc.sender_id}, function(err, currentUser){
       console.log("DEBUG: dentro : "+ idle);
       Idles.find({"reference" : doc.last_payload}).exec(function(err, messages){
         if(err) throw err;
