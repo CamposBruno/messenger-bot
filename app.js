@@ -204,7 +204,7 @@ app.post('/webhook', function (req, res) {
                 gender: fbUser.gender
               });
 
-              if(payload != "PROGRESS" && payload != "HELP"){
+              if(payload != "PROGRESS" && payload != "HELP" && payload != null){
                 currentUser.progress = getProgress(payload); 
               }
 
