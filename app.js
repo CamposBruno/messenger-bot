@@ -208,7 +208,7 @@ app.post('/webhook', function (req, res) {
                 currentUser.progress = getProgress(payload);
               }
 
-              User.update(where, {$setOnInsert: currentUser}, {$upsert: true}, function(err, numAffected){
+              User.findOneAndUpdate(where, {$setOnInsert: currentUser}, {$upsert: true}, function(err, numAffected){
                 console.log("AFFECTED: ", numAffected);
                 handleHaveUser(err, numAffected, currentUser)
               });
