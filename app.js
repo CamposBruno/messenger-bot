@@ -208,9 +208,32 @@ app.post('/webhook', function (req, res) {
                 currentUser.progress = getProgress(payload);
               }
 
-              User.findOneAndUpdate(where, {$setOnInsert: currentUser}, {$upsert: true}, function(err, numAffected){
-                console.log("AFFECTED: ", numAffected);
-                handleHaveUser(err, numAffected, currentUser)
+              User.findOne(where, function(err, user){
+                if(!user){
+
+                  currentUser.save(function(err, doc){
+                    handleHaveUser(err, doc, currentUser);
+                  });
+                  
+                }else{
+
+                  user.first_name = currentUser.first_name;
+                  user.last_name = currentUser.last_name;
+                  user.profile_pic = currentUser.profile_pic;
+                  user.locale = currentUser.locale;
+                  user.timezone = currentUser.timezone;
+                  user.gender = currentUser.gender;
+
+                  if(payload != "PROGRESS" && payload != "HELP" && payload != null){
+                    user.progress = getProgress(payload);
+                  }
+
+                  user.save(function(err, doc){
+                    handleHaveUser(err, doc, user);
+                  });
+
+                }
+
               });
 
             }else{
