@@ -1223,7 +1223,7 @@ function buscaMsgIdleEnvia(where, set, idle){
 function idle72(session){
   console.log("idle 72");
   //var tresDiasAtras = new Date(Date.now() - 259200000);
-  var tresDiasAtras = new Date(Date.now() - 1*60000);
+  var tresDiasAtras = new Date(Date.now() - 3*60000);
   var where = {"_id" : session.msg_id};
   var set = {"idle72" : true};
   if(tresDiasAtras > session.createdAt){
@@ -1239,7 +1239,8 @@ function idle72(session){
 
 function idle24(session){
   console.log("idle 24");
-  var umDiaAtras = new Date(Date.now() - 86400000);
+  //var umDiaAtras = new Date(Date.now() - 86400000);
+  var umDiaAtras = new Date(Date.now() - 2*60000);
   var where = {"_id" : session.msg_id};
   var set = {"idle24" : true};
   if(umDiaAtras > session.createdAt){
@@ -1255,7 +1256,7 @@ function idle24(session){
 
 function idle10(session){
   console.log("idle 10");
-  var dezMinutosAtras = new Date(Date.now() - 10*60000);
+  var dezMinutosAtras = new Date(Date.now() - 1*60000);
   var where = {"_id" : session.msg_id};
   var set = {"idle10" : true};
   if(dezMinutosAtras > session.createdAt){
