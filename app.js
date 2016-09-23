@@ -214,7 +214,7 @@ app.post('/webhook', function (req, res) {
                   currentUser.save(function(err, doc){
                     handleHaveUser(err, doc, currentUser);
                   });
-                  
+
                 }else{
 
                   user.first_name = currentUser.first_name;
@@ -241,44 +241,6 @@ app.post('/webhook', function (req, res) {
             }
         });
 
-
-        function getProgress(payload){
-          switch (payload) {
-            case 'START_BOT':
-              return 10;
-              break;
-            case 'LEVEL_2':
-                return 9;
-                break;
-            case 'LEVEL_3':
-                return 8;
-                break;
-                case 'LEVEL_4':
-                    return 7;
-                    break;
-                    case 'LEVEL_5':
-                        return 6;
-                        break;
-                        case 'LEVEL_6':
-                            return 5;
-                            break;
-                            case 'LEVEL_7':
-                                return 4;
-                                break;
-                                case 'LEVEL_8':
-                                    return 3;
-                                    break;
-                                    case 'LEVEL_9':
-                                        return 2;
-                                        break;
-                                        case 'LEVEL_10':
-                                            return 1;
-                                            break;
-            default:
-              return 0;
-
-          }
-        }
 
         function handleHaveUser(err, numAffected, currentUser){
           // cria novo registro de sessão
@@ -591,6 +553,45 @@ function enviaMesmoAMensagem(currentUser, messagejson, index, timeout){
     sendTypingOff(currentUser.user_id);
     callSendAPI(messagejson);
   }, (index + 1 ) * timeout);
+}
+
+
+function getProgress(payload){
+  switch (payload) {
+    case 'START_BOT':
+      return 10;
+      break;
+    case 'LEVEL_2':
+        return 9;
+        break;
+    case 'LEVEL_3':
+        return 8;
+        break;
+    case 'LEVEL_4':
+        return 7;
+        break;
+    case 'LEVEL_5':
+        return 6;
+        break;
+    case 'LEVEL_6':
+        return 5;
+        break;
+    case 'LEVEL_7':
+        return 4;
+        break;
+    case 'LEVEL_8':
+        return 3;
+        break;
+    case 'LEVEL_9':
+        return 2;
+        break;
+    case 'LEVEL_10':
+        return 1;
+        break;
+    default:
+      return 0;
+
+  }
 }
 
 /*
@@ -1221,7 +1222,8 @@ function buscaMsgIdleEnvia(where, set, idle){
 
 function idle72(session){
   console.log("idle 72");
-  var tresDiasAtras = new Date(Date.now() - 259200000);
+  //var tresDiasAtras = new Date(Date.now() - 259200000);
+  var tresDiasAtras = new Date(Date.now() - 1*60000);
   var where = {"_id" : session.msg_id};
   var set = {"idle72" : true};
   if(tresDiasAtras > session.createdAt){
