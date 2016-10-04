@@ -1190,19 +1190,19 @@ function buscaMsgIdleEnvia(where, set, idle){
 
         if(messages && messages.length){
           messages.forEach(function(message, index){
-            var text;
+            var text = [];
             switch (idle) {
               case 'idle10':
-                text[] = message.idle10;
+                text.push(message.idle10);
                 break;
               case 'idle24':
-                text[] = message.idle24;
+                text.push(message.idle24);
                 break;
               case 'idle72':
-                text[] = message.idle72;
+                text.push(message.idle72);
                 break;
               default:
-                text[] = message.idle72;
+                text.push(message.idle72);
             }
 
             console.log("IDLE: length "+ text);
