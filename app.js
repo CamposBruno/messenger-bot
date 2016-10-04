@@ -1207,20 +1207,17 @@ function buscaMsgIdleEnvia(where, set, idle){
 
             console.log("IDLE: length "+ text);
 
-            if(text.length){
-              text.forEach(function(m, i){
-
-                var messagejson = {
-                  recipient: {
-                    id: doc.sender_id
-                  },
-                  message: JSON.parse(m)
-                };
-                console.log("DEBUG: envia mensagem IDLE para usuario : " + doc.sender_id);
-                //enviarMensagem(currentUser, messagejson, {tempo: null, reference : null}, 1);
+            var messagejson = {
+                recipient: {
+                  id: doc.sender_id
+                },
+                message: JSON.parse(text)
+              };
+              console.log("DEBUG: envia mensagem IDLE ${idle} para usuario : " + doc.sender_id);
+              //enviarMensagem(currentUser, messagejson, {tempo: null, reference : null}, 1);
                 //callSendAPI(messagejson);
 
-              });
+
             }
           });
         }
