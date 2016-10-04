@@ -1213,6 +1213,7 @@ function buscaMsgIdleEnvia(where, set, idle){
                 message: JSON.parse(text)
               };
               console.log("DEBUG: envia mensagem IDLE para usuario : " + doc.sender_id);
+              currentUser.user_id = doc.sender_id;
               enviarMensagem(currentUser, messagejson, {tempo: null, reference : null}, 1);
               //callSendAPI(messagejson);
 
