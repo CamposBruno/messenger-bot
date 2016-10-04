@@ -1257,7 +1257,7 @@ function idle24(session){
 
 function idle10(session){
   console.log("idle 10");
-  var dezMinutosAtras = new Date(Date.now() - 10*600);
+  var dezMinutosAtras = new Date(Date.now() - 10*60000);
   var where = {"_id" : session.msg_id};
   var set = {"idle10" : true};
   if(dezMinutosAtras > session.createdAt){
