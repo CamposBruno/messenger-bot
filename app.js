@@ -1183,44 +1183,47 @@ function buscaMsgIdleEnvia(where, set, idle){
   console.log("buscaMsgIdleEnvia");
   UserSession.findOneAndUpdate(where, set, {upsert: true}, function(err, doc){
 
-    User.findOne({"user_id": doc.sender_id}, function(err, currentUser){
-      console.log("DEBUG: dentro : "+ idle);
-      Idles.find({"reference" : doc.last_payload}).exec(function(err, messages){
-        if(err) throw err;
+    if(doc.sender_id != "ROBOT"){
 
-        if(messages && messages.length){
-          messages.forEach(function(message, index){
-            var text;
-            switch (idle) {
-              case 'idle10':
-                text = message.idle10;
-                break;
-              case 'idle24':
-                text = message.idle24;
-                break;
-              case 'idle72':
-                text = message.idle72;
-                break;
-              default:
-                text = message.idle72;
-            }
+      User.findOne({"user_id": doc.sender_id}, function(err, currentUser){
+        console.log("DEBUG: dentro : "+ idle);
+        Idles.find({"reference" : doc.last_payload}).exec(function(err, messages){
+          if(err) throw err;
 
-            console.log("IDLE: length "+ text);
-              var messagejson = {
-                recipient: {
-                  id: doc.sender_id
-                },
-                message: JSON.parse(text)
-              };
-              console.log("DEBUG: envia mensagem IDLE para usuario : " + doc.sender_id);
-              currentUser.user_id = doc.sender_id;
-              enviarMensagem(currentUser, messagejson, {tempo: null, reference : null}, 1);
-              //callSendAPI(messagejson);
+          if(messages && messages.length){
+            messages.forEach(function(message, index){
+              var text;
+              switch (idle) {
+                case 'idle10':
+                  text = message.idle10;
+                  break;
+                case 'idle24':
+                  text = message.idle24;
+                  break;
+                case 'idle72':
+                  text = message.idle72;
+                  break;
+                default:
+                  text = message.idle72;
+              }
 
-          });
-        }
+              console.log("IDLE: length "+ text);
+                var messagejson = {
+                  recipient: {
+                    id: doc.sender_id
+                  },
+                  message: JSON.parse(text)
+                };
+                console.log("DEBUG: envia mensagem IDLE para usuario : " + doc.sender_id);
+                currentUser.user_id = doc.sender_id;
+                enviarMensagem(currentUser, messagejson, {tempo: null, reference : null}, 1);
+                //callSendAPI(messagejson);
+
+            });
+          }
+        });
       });
-    });
+    }
   });
 }
 
