@@ -1205,6 +1205,8 @@ function buscaMsgIdleEnvia(where, set, idle){
                 text = message.idle72;
             }
 
+            console.log("IDLE: length "+ text.length);
+
             if(text.length){
               text.forEach(function(m, i){
 
