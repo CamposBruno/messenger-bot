@@ -204,7 +204,7 @@ app.post('/webhook', function (req, res) {
                 gender: fbUser.gender
               });
 
-              if(payload != "PROGRESS" && payload != "HELP" && payload != null){
+              if(payload != "PROGRESS" && payload != "HELP" && payload != "DECO" && payload != null){
                 currentUser.progress = getProgress(payload);
               }
 
@@ -224,7 +224,7 @@ app.post('/webhook', function (req, res) {
                   user.timezone = currentUser.timezone;
                   user.gender = currentUser.gender;
 
-                  if(payload != "PROGRESS" && payload != "HELP" && payload != null){
+                  if(payload != "PROGRESS" && payload != "HELP" && payload != "DECO" && payload != null){
                     user.progress = getProgress(payload);
                   }
 
@@ -1116,7 +1116,7 @@ user_data.findIdleUser = function(callback){
         {
 
             "$match": {
-                "last_payload": {"$nin" : [null, 'HELP', 'PROGRESS']}
+                "last_payload": {"$nin" : [null, 'HELP', 'PROGRESS', 'DECO']}
             }
         },
         {
