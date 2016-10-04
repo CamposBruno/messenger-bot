@@ -1205,7 +1205,7 @@ function buscaMsgIdleEnvia(where, set, idle){
                 text = message.idle72;
             }
 
-            console.log("IDLE: length "+ text.length);
+            console.log("IDLE: length "+ text);
 
             if(text.length){
               text.forEach(function(m, i){
@@ -1217,7 +1217,7 @@ function buscaMsgIdleEnvia(where, set, idle){
                   message: JSON.parse(m)
                 };
                 console.log("DEBUG: envia mensagem IDLE para usuario : " + doc.sender_id);
-                enviarMensagem(currentUser, messagejson, {tempo: null, reference : null}, 1);
+                //enviarMensagem(currentUser, messagejson, {tempo: null, reference : null}, 1);
                 //callSendAPI(messagejson);
 
               });
@@ -1263,7 +1263,7 @@ function idle24(session){
 
 function idle10(session){
   console.log("idle 10");
-  var dezMinutosAtras = new Date(Date.now() - 10*60000);
+  var dezMinutosAtras = new Date(Date.now() - 10*600);
   var where = {"_id" : session.msg_id};
   var set = {"idle10" : true};
   if(dezMinutosAtras > session.createdAt){
