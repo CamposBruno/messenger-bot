@@ -1205,22 +1205,21 @@ function buscaMsgIdleEnvia(where, set, idle){
                 text = message.idle72;
             }
 
-            text.forEach(function(m, i){
+            if(text.length){
+              text.forEach(function(m, i){
 
-              var messagejson = {
-                recipient: {
-                  id: doc.sender_id
-                },
-                message: JSON.parse(m)
-              };
-              console.log("DEBUG: envia mensagem IDLE para usuario : " + doc.sender_id);
-              enviarMensagem(currentUser, messagejson, {tempo: null, reference : null}, 1);
-              //callSendAPI(messagejson);
+                var messagejson = {
+                  recipient: {
+                    id: doc.sender_id
+                  },
+                  message: JSON.parse(m)
+                };
+                console.log("DEBUG: envia mensagem IDLE para usuario : " + doc.sender_id);
+                enviarMensagem(currentUser, messagejson, {tempo: null, reference : null}, 1);
+                //callSendAPI(messagejson);
 
-            });
-
-
-
+              });
+            }
           });
         }
       });
