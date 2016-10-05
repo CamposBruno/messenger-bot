@@ -4,5 +4,4 @@ curl -X POST -H "Content-Type: application/json" -d '{
   "greeting":{
     "text":"Salve! Eu sou o Deco do Programa Pense Grande. Tô aqui pra te mostrar 10 passos que vão ajudar você a tirar uma grana com o seu talento. Bora começar?"
   }
-}' "https://graph.facebook.com/v2.6/me/thread_settings?access_token=EAAK9BYxZCXocBAKni5jZCLK7QjDVLaFaCr2rn5jydidcTeAYQ3fUatg3amVbsQtG2E96S6OUWdZCXnrluuMMq046ocWi64ZBUtUYgBHbVO9ayMabxwa87ZASBiAkZAJeLcm7cqQrfbLfHhWUTpSKOvo86sZA98smwd3jWMU1VNSNtZBiYf7RO4EJ"
-
+}' "https://graph.facebook.com/v2.6/me/thread_settings?access_token=EAAEMZAWWAvGEBAFN4NwsZAhcIWvi510sbZBzsPJvZBzZAr3BJShSTNGLzYloREtHuZC9GCZAmzhl0cKP3KuDquMA0zCiQPZCsqcWLaZCYaN5Ubp2Sfy3ZCO8NFWQkZBCxPwiVaLws3V3hqQoU7ZCpFsBaWYQBwXGE1z6jIfe2tvP6Mnk0wZDZD"
