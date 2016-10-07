@@ -15,7 +15,8 @@
 
 // ------------- BEGIN MODEL ---------------
 var mongoose = require('mongoose');
-var mongodbUri = 'mongodb://heroku_2w56zwxb:iv2ghrpt8nfs7m8vdnu2tpte0t@ds145245.mlab.com:45245/heroku_2w56zwxb';
+//var mongodbUri = 'mongodb://heroku_2w56zwxb:iv2ghrpt8nfs7m8vdnu2tpte0t@ds145245.mlab.com:45245/heroku_2w56zwxb';
+var mongodbUri = process.env.MONGODB_URI;
 
 mongoose.connect(mongodbUri);
 
