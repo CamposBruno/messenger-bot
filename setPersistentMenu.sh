@@ -12,7 +12,7 @@ curl -X POST -H "Content-Type: application/json" -d '{
     {
       "type":"web_url",
       "title":"Site Pense Grande",
-      "url":"http://fundacaotelefonica.org.br/projetos/pense-grande/"
+      "url":"http://fundacaotelefonica.org.br/pensegrande/"
     },
     {
       "type":"postback",
