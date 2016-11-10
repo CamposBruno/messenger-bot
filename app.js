@@ -174,7 +174,7 @@ app.post('/webhook', function (req, res) {
           messagingEvent.delivery ||
           messagingEvent.read ||
           messagingEvent.account_linking){
-            console.log("DESNECESSÁRIO");
+            //console.log("DESNECESSÁRIO");
       }else{
 
         if(messagingEvent.postback){
@@ -189,7 +189,7 @@ app.post('/webhook', function (req, res) {
           qs: { access_token: PAGE_ACCESS_TOKEN , fields : 'first_name,last_name,profile_pic,locale,timezone,gender'}
 
         }, function(error, response, body){
-            console.log("DEBUG: respota do facebook "+ response.statusCode);
+            //console.log("DEBUG: respota do facebook "+ response.statusCode);
 
             if (!error && response.statusCode == 200) {
 
@@ -272,7 +272,7 @@ app.post('/webhook', function (req, res) {
 
         function handleFindMessageToSend(err, docs, currentUser){
           if(err) throw err;
-          console.log("DEBUG: busca mensagens com payload enviado. achou: " + docs.length);
+          //console.log("DEBUG: busca mensagens com payload enviado. achou: " + docs.length);
 
           if(docs.length)
             prepareMessageToSend(docs, currentUser);
@@ -1159,7 +1159,7 @@ user_data.findIdleUser = function(callback){
 var cron = require('node-cron');
 
 var idles = cron.schedule('*/1 * * * *', function(){
-  console.log('CRON: running a task every  minutes');
+  console.log('CRON: running a task every 1  minutes');
   // usuarios inativos por 10 min
   user_data.findIdleUser(function(err, sessions){
     if(sessions && sessions.length){
@@ -1181,13 +1181,13 @@ var idles = cron.schedule('*/1 * * * *', function(){
 
 
 function buscaMsgIdleEnvia(where, set, idle){
-  console.log("buscaMsgIdleEnvia");
+  //console.log("buscaMsgIdleEnvia");
   UserSession.findOneAndUpdate(where, set, {upsert: true}, function(err, doc){
 
     if(doc.sender_id != "ROBOT"){
 
       User.findOne({"user_id": doc.sender_id}, function(err, currentUser){
-        console.log("DEBUG: dentro : "+ idle);
+        //console.log("DEBUG: dentro : "+ idle);
         Idles.find({"reference" : doc.last_payload}).exec(function(err, messages){
           if(err) throw err;
 
@@ -1208,14 +1208,14 @@ function buscaMsgIdleEnvia(where, set, idle){
                   text = message.idle72;
               }
 
-              console.log("IDLE: length "+ text);
+              //console.log("IDLE: length "+ text);
                 var messagejson = {
                   recipient: {
                     id: doc.sender_id
                   },
                   message: JSON.parse(text)
                 };
-                console.log("DEBUG: envia mensagem IDLE para usuario : " + doc.sender_id);
+                console.log("DEBUG: envia mensagem IDLE "+idle+" para usuario : " + doc.sender_id);
                 currentUser.user_id = doc.sender_id;
                 enviarMensagem(currentUser, messagejson, {tempo: null, reference : null}, 1);
                 //callSendAPI(messagejson);
@@ -1229,7 +1229,7 @@ function buscaMsgIdleEnvia(where, set, idle){
 }
 
 function idle72(session){
-  console.log("idle 72");
+  //console.log("idle 72");
   var tresDiasAtras = new Date(Date.now() - 259200000);
   var where = {"_id" : session.msg_id};
   var set = {"idle72" : true};
@@ -1240,12 +1240,12 @@ function idle72(session){
        buscaMsgIdleEnvia(where, set, "idle72");
      }
   }else{
-    console.log("IDLE : ainda não ficou idle 72");
+    //console.log("IDLE : ainda não ficou idle 72");
   }
 }
 
 function idle24(session){
-  console.log("idle 24");
+  //console.log("idle 24");
   var umDiaAtras = new Date(Date.now() - 86400000);
   var where = {"_id" : session.msg_id};
   var set = {"idle24" : true};
@@ -1256,12 +1256,12 @@ function idle24(session){
        buscaMsgIdleEnvia(where, set, "idle24");
      }
   }else{
-    console.log("IDLE: ainda não está idle 24")
+    //console.log("IDLE: ainda não está idle 24")
   }
 }
 
 function idle10(session){
-  console.log("idle 10");
+  //console.log("idle 10");
   var dezMinutosAtras = new Date(Date.now() - 10*60000);
   var where = {"_id" : session.msg_id};
   var set = {"idle10" : true};
@@ -1272,7 +1272,7 @@ function idle10(session){
        buscaMsgIdleEnvia(where, set, "idle10");
      }
   }else{
-    console.log("IDLE: ainda não está idle 10");
+    //console.log("IDLE: ainda não está idle 10");
   }
 }
 
