@@ -1170,7 +1170,7 @@ var idles = cron.schedule('*/1 * * * *', function(){
         }else if(!session.idle24){
           idle24(session);
         }else if(!session.idle72){
-          idle72(session);
+    //      idle72(session);
         }
       });
     }
