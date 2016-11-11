@@ -1210,6 +1210,7 @@ function buscaMsgIdleEnvia(where, set, idle){
 
               //console.log("IDLE: length "+ text);
                 var messagejson = {
+                  
                   recipient: {
                     id: doc.sender_id
                   },
