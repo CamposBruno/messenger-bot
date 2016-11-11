@@ -1063,7 +1063,7 @@ function callSendAPI(messageData) {
         recipientId);
       }
     } else {
-      console.error("ERROR CAL SEND API ", response);
+      console.error("ERROR CAL SEND API ", response.body.error.message);
     }
   });
 }
@@ -1088,7 +1088,7 @@ app.post('/insert_message', function(req, res) {
       var pageID = pageEntry.id;
       var timeOfEvent = pageEntry.time;
 
-      console.log("PAGE: ", pageEntry);
+      //console.log("PAGE: ", pageEntry);
     });
   }
 
