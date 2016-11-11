@@ -1104,7 +1104,7 @@ app.post('/insert_message', function(req, res) {
 /**************************************
 ****************IDLES*****************
 **************************************/
-
+/*
 var user_data = {};
 user_data.findById = function(user_id, callback){
   User.find({"user_id" : user_id}, callback);
@@ -1155,13 +1155,13 @@ user_data.findIdleUser = function(callback){
         }
     ]).exec(callback);
 }
+*/
+//var cron = require('node-cron');
 
-var cron = require('node-cron');
-
-var idles = cron.schedule('*/1 * * * *', function(){
-  console.log('CRON: running a task every 1  minutes');
+//var idles = cron.schedule('*/1 * * * *', function(){
+//  console.log('CRON: running a task every 1  minutes');
   // usuarios inativos por 10 min
-  user_data.findIdleUser(function(err, sessions){
+  /*user_data.findIdleUser(function(err, sessions){
     if(sessions && sessions.length){
       console.log("DEBUG: achou usuarios : "+ sessions.length);
       sessions.forEach(function(session, index){
@@ -1177,7 +1177,7 @@ var idles = cron.schedule('*/1 * * * *', function(){
   });
 
 });
-
+*/
 
 
 function buscaMsgIdleEnvia(where, set, idle){
@@ -1210,7 +1210,7 @@ function buscaMsgIdleEnvia(where, set, idle){
 
               //console.log("IDLE: length "+ text);
                 var messagejson = {
-                  
+
                   recipient: {
                     id: doc.sender_id
                   },
